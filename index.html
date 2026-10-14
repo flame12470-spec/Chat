@@ -16,13 +16,9 @@ button{cursor:pointer}
 :focus-visible{outline:3px solid var(--brand);outline-offset:2px}
 [hidden],.hide{display:none!important}
 
-/* ---------- แถบเมนูแบบแคปซูล ---------- */
 header{flex:none;z-index:30;padding:max(12px,env(safe-area-inset-top)) 12px 0}
-.bar{max-width:1040px;margin:auto;padding:8px 10px 8px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:999px;box-shadow:var(--sh)}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;min-width:0}
-.logo span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mark{flex:none;width:36px;height:36px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:19px}
-nav{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
+.bar{max-width:1040px;margin:auto;padding:8px 10px 8px 12px;display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:999px;box-shadow:var(--sh)}
+nav{display:flex;gap:2px;align-items:center;flex-wrap:wrap;margin-right:auto}
 nav button{background:none;border:0;padding:8px 15px;border-radius:999px;font-weight:500;color:var(--mute);transition:background .15s}
 nav button:hover{background:var(--soft);color:var(--brand)}
 nav button.on{background:var(--ink);color:#fff}
@@ -35,14 +31,12 @@ main.wide{max-width:1040px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--sh)}
 .chat{overflow:hidden}
 
-/* ---------- ฮีโร่ต้อนรับ ---------- */
 .hero{position:relative;overflow:hidden;background:var(--brand);color:#fff;border-radius:22px;padding:22px 22px;margin-bottom:6px;box-shadow:0 22px 44px -24px color-mix(in srgb,var(--brand) 80%,transparent);flex:none}
 .hero::before{content:"";position:absolute;right:-130px;top:-150px;width:400px;height:400px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 24px,rgba(255,255,255,.09) 24px 26px);pointer-events:none}
 .hero>*{position:relative}
 .hero h2{margin:0 0 4px;font-size:clamp(19px,4.5vw,24px);font-weight:700;line-height:1.25}
 .hero p{margin:0;color:rgba(255,255,255,.85);font-size:14px}
 
-/* ---------- แชท ---------- */
 .log{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
 .msg{max-width:82%;padding:10px 14px;border-radius:20px;overflow-wrap:anywhere}
 .msg .t{white-space:pre-wrap}
@@ -56,8 +50,6 @@ main.wide{max-width:1040px}
 .msg.typing i:nth-child(2){animation-delay:.16s}
 .msg.typing i:nth-child(3){animation-delay:.32s}
 @keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-5px);opacity:1}}
-.msg.in{animation:pop .22s}
-@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}}
 .chiptitle{padding:0 16px 6px;font-size:12.5px;color:var(--mute);font-weight:600}
 .chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 12px}
 .chip{border:1.5px solid var(--brand);background:#fff;color:var(--brand);border-radius:999px;padding:7px 15px;font-weight:600;font-size:14px;transition:background .15s}
@@ -75,7 +67,6 @@ form.send input{border-radius:999px}
 .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
 form.send .btn{border-radius:999px;flex:none}
 
-/* ---------- ยืนยันตัวตน ---------- */
 .center{flex:1;display:grid;place-items:center;padding:16px;overflow:auto}
 .box{width:min(400px,100%);padding:26px}
 .box h2{margin:0 0 4px;font-size:20px;font-weight:700}
@@ -86,7 +77,6 @@ form.send .btn{border-radius:999px;flex:none}
 .pill{font-size:12px;font-weight:600;padding:2px 10px;border-radius:99px;background:#d9f6ea;color:#07805a;white-space:nowrap}
 .pill.c{background:#eceff5;color:var(--mute)}
 
-/* ---------- แอดมิน ---------- */
 .adm{flex:1;min-height:0;display:grid;grid-template-columns:300px 1fr;gap:12px}
 .rooms{overflow-y:auto;padding:8px}
 .room{width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:16px;display:block}
@@ -106,13 +96,14 @@ form.send .btn{border-radius:999px;flex:none}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;z-index:99;max-width:90vw;box-shadow:0 12px 30px rgba(12,19,36,.3)}
 .toast.bad{background:var(--coral)}
 .bg{position:fixed;inset:0;z-index:50;background:rgba(12,19,36,.45);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px}
-@media(max-width:720px){.adm{grid-template-columns:1fr}.adm.chatopen .rooms{display:none}.adm:not(.chatopen) .chatcol{display:none}.msg{max-width:90%}.bar{border-radius:26px}nav button{padding:8px 11px}.logo span.t{max-width:42vw}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.quick-btns{display:flex;gap:6px;padding:6px 10px;background:#f8fafc;border-top:1px solid var(--line);overflow-x:auto}
+.quick-btn{background:#e2e8f0;border:0;padding:5px 10px;border-radius:8px;font-size:12px;white-space:nowrap;cursor:pointer}
+.quick-btn:hover{background:var(--brand);color:#fff}
+@media(max-width:720px){.adm{grid-template-columns:1fr}.adm.chatopen .rooms{display:none}.adm:not(.chatopen) .chatcol{display:none}}
 </style>
 </head>
 <body>
 <header><div class="bar">
-  <div class="logo"><span class="mark" id="hLogo">🏫</span><span class="t" id="hTitle"></span></div>
   <nav id="navUser">
     <button id="tabBot" class="on" type="button"></button>
     <button id="tabPriv" type="button"></button>
@@ -128,9 +119,7 @@ form.send .btn{border-radius:999px;flex:none}
 </div></header>
 
 <main id="main">
-  <!-- ผู้ใช้ทั่วไป -->
   <section class="pane" id="userView">
-    <!-- ถามบอท -->
     <div class="card chat pane" id="botPane">
       <div class="log" id="botLog">
         <div class="hero" id="hero"><h2 id="wTitle"></h2><p id="wText"></p></div>
@@ -140,15 +129,12 @@ form.send .btn{border-radius:999px;flex:none}
       <form class="send" id="botForm" autocomplete="off"><input id="botIn" maxlength="300" aria-label="ข้อความ"><button class="btn" id="botSend"></button></form>
     </div>
 
-    <!-- คุยกับเจ้าหน้าที่ -->
     <div class="card chat pane hide" id="privPane">
       <div class="center" id="loginBox">
         <form class="box" id="loginForm" autocomplete="off">
-          <h2 id="lgTitle"></h2><p class="sub" id="lgText"></p>
-          <label class="lbl" for="room">ห้อง</label>
-          <select id="room" required><option value="">กำลังโหลด...</option></select>
-          <label class="lbl" for="code" id="lgCodeL"></label>
-          <input id="code" inputmode="numeric" pattern="\d{1,3}" maxlength="3" required autocomplete="off">
+          <h2 id="lgTitle"></h2><p class="sub" id="lgText">กรุณากรอกรหัสนักเรียน 5 หลักเพื่อยืนยันตัวตน</p>
+          <label class="lbl" for="code" id="lgCodeL">รหัสนักเรียน (5 หลัก)</label>
+          <input id="code" inputmode="numeric" pattern="\d{5}" maxlength="5" required autocomplete="off" placeholder="เช่น 12345">
           <button class="btn" id="lgBtn" style="width:100%;margin-top:16px"></button>
           <p class="err" id="lgErr"></p>
         </form>
@@ -156,13 +142,22 @@ form.send .btn{border-radius:999px;flex:none}
       <div class="pane hide" id="chatBox">
         <div class="bar2"><div><b id="stName"></b> <span class="pill" id="stStatus"></span></div><button class="btn o s" id="lgOut" type="button"></button></div>
         <div class="log" id="privLog"></div>
-        <div class="hide" id="closedBox" style="padding:14px;text-align:center"><p class="meta" id="closedText"></p><button class="btn" id="newChat" type="button"></button></div>
+        <!-- กล่องประเมินความพึงพอใจเมื่อห้องถูกปิด -->
+        <div class="hide" id="closedBox" style="padding:16px;text-align:center;background:#f8fafc;border-top:1px solid var(--line)">
+          <p class="meta" id="closedText" style="margin-bottom:8px">ห้องแชทนี้ถูกปิดแล้ว กรุณาประเมินการให้บริการครับ</p>
+          <div id="ratingArea" style="display:flex;gap:8px;justify-content:center;margin-bottom:12px">
+            <button class="btn s o" onclick="rateSession('⭐ ดีมาก')">⭐ ดีมาก</button>
+            <button class="btn s o" onclick="rateSession('👍 ปานกลาง')">👍 ปานกลาง</button>
+            <button class="btn s o" onclick="rateSession('⚠️ ควรปรับปรุง')">⚠️ ควรปรับปรุง</button>
+          </div>
+          <div id="ratedThanks" class="hide" style="color:var(--mint);font-weight:600;margin-bottom:10px">ขอบคุณสำหรับการประเมินครับ 🙏</div>
+          <button class="btn" id="newChat" type="button"></button>
+        </div>
         <form class="send" id="privForm" autocomplete="off"><input id="privIn" maxlength="1000" aria-label="ข้อความ"><button class="btn" id="privSend"></button></form>
       </div>
     </div>
   </section>
 
-  <!-- แอดมิน -->
   <section class="pane hide" id="adminView">
     <div class="adm" id="admGrid">
       <div class="card rooms" id="rooms"></div>
@@ -173,7 +168,6 @@ form.send .btn{border-radius:999px;flex:none}
   </section>
 </main>
 
-<!-- หน้าต่างล็อกอินแอดมิน -->
 <div class="bg hide" id="admLogin">
   <form class="card box" id="admForm">
     <h2>เข้าสู่ระบบผู้ดูแล</h2><p class="sub">สำหรับเจ้าหน้าที่เท่านั้น</p>
@@ -185,83 +179,74 @@ form.send .btn{border-radius:999px;flex:none}
 </div>
 
 <script>
-/* ============ ตั้งค่าการเชื่อมต่อ ============ */
 const SB_URL='https://aefzegkgfwszuiznihsk.supabase.co';
-const SB_KEY='sb_publishable_Z1zogpI9qqUlegxG816ncQ_eHeaiFvr';   // publishable key เท่านั้น ห้ามใส่ service_role
+const SB_KEY='sb_publishable_Z1zogpI9qqUlegxG816ncQ_eHeaiFvr';
 const SETTINGS_TABLE='sp_settings', KEY_PREFIX='chat_';
 
-/* ============ ข้อความและสีทั้งหมด (แก้ได้ในแท็บ "แก้ไขหน้าเว็บ") ============ */
 const TEXT_FIELDS=[
- ['site_name','ชื่อระบบ (หัวเว็บ)'],['logo','ไอคอนโลโก้ (อีโมจิ)'],
  ['tab_bot','ชื่อเมนู: ถามบอท'],['tab_priv','ชื่อเมนู: คุยกับเจ้าหน้าที่'],
  ['welcome_title','ข้อความต้อนรับ: หัวข้อ'],['welcome_text','ข้อความต้อนรับ: รายละเอียด'],
  ['faq_title','หัวข้อปุ่มคำถามด่วน'],['bot_placeholder','ข้อความจางช่องพิมพ์ (บอท)'],['send_btn','ปุ่มส่ง'],
  ['fallback','บอทตอบเมื่อไม่เข้าใจ'],
  ['login_title','หน้ายืนยันตัวตน: หัวข้อ'],['login_text','หน้ายืนยันตัวตน: คำอธิบาย'],
  ['code_label','ป้ายช่องรหัสนักเรียน'],['login_btn','ปุ่มยืนยันตัวตน'],
- ['login_err','ข้อความเมื่อยืนยันไม่ผ่าน'],['locked_err','ข้อความเมื่อลองผิดหลายครั้ง'],
+ ['login_err','ข้อความเมื่อยืนยันไม่ผ่าน'],
  ['priv_placeholder','ข้อความจางช่องพิมพ์ (แชทส่วนตัว)'],['priv_hello','ข้อความแรกในแชทส่วนตัว'],
  ['logout_btn','ปุ่มออกจากแชท'],['closed_text','ข้อความเมื่อห้องถูกปิด'],['new_chat_btn','ปุ่มเริ่มแชทใหม่'],
  ['status_open','ป้ายสถานะ: เปิดอยู่'],['status_closed','ป้ายสถานะ: ปิดแล้ว'],
 ];
-const COLOR_FIELDS=[['brand','สีหลัก (ปุ่ม/การ์ดต้อนรับ)'],['bg','สีพื้นหลังเว็บ'],['me','สีข้อความของฉัน'],['staff','สีข้อความเจ้าหน้าที่'],['bot','สีข้อความบอท']];
+const COLOR_FIELDS=[['brand','สีหลัก'],['bg','สีพื้นหลังเว็บ'],['me','สีข้อความของฉัน'],['staff','สีข้อความเจ้าหน้าที่'],['bot','สีข้อความบอท']];
 const DEF={
- site_name:'แชทโรงเรียน',logo:'🏫',
  tab_bot:'ถามบอท',tab_priv:'คุยกับเจ้าหน้าที่',
- welcome_title:'สวัสดี ยินดีต้อนรับ 👋',welcome_text:'เลือกคำถามด้านล่าง หรือพิมพ์ถามบอทได้เลย หากต้องการคุยส่วนตัวกับเจ้าหน้าที่ ให้กดเมนู "คุยกับเจ้าหน้าที่" ด้านบน',
+ welcome_title:'สวัสดี ยินดีต้อนรับ 👋',welcome_text:'เลือกคำถามด้านล่าง หรือพิมพ์ถามบอทได้เลย',
  faq_title:'คำถามที่พบบ่อย',bot_placeholder:'พิมพ์คำถามของคุณ...',send_btn:'ส่ง',
- fallback:'ขออภัย บอทยังไม่เข้าใจคำถามนี้ ลองเลือกจากปุ่มคำถามด่วน หรือกดเมนู "คุยกับเจ้าหน้าที่" เพื่อสอบถามเจ้าหน้าที่โดยตรง',
- login_title:'ยืนยันตัวตนนักเรียน',login_text:'เลือกห้องและกรอกเลขที่ของคุณเพื่อคุยกับเจ้าหน้าที่',
- code_label:'เลขที่',login_btn:'ยืนยันตัวตน',
- login_err:'ไม่พบข้อมูล กรุณาตรวจสอบห้องและเลขที่',locked_err:'ลองผิดหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่',
+ fallback:'ขออภัย บอทยังไม่เข้าใจคำถามนี้ ลองเลือกจากปุ่มคำถามด่วน หรือกดคุยกับเจ้าหน้าที่',
+ login_title:'ยืนยันตัวตนนักเรียน',login_text:'กรอกรหัสนักเรียน 5 หลักเพื่อคุยกับเจ้าหน้าที่',
+ code_label:'รหัสนักเรียน (5 หลัก)',login_btn:'ยืนยันตัวตน',
+ login_err:'ไม่พบรหัสนักเรียนนี้ กรุณาตรวจสอบอีกครั้ง',
  priv_placeholder:'พิมพ์ข้อความถึงเจ้าหน้าที่...',priv_hello:'สวัสดี! พิมพ์ข้อความด้านล่างเพื่อติดต่อเจ้าหน้าที่ได้เลย',
- logout_btn:'ออกจากแชท',closed_text:'ห้องแชทนี้ถูกปิดแล้ว หากต้องการสอบถามเพิ่มเติมสามารถเริ่มแชทใหม่ได้',new_chat_btn:'เริ่มแชทใหม่',
+ logout_btn:'ออกจากแชท',closed_text:'ห้องแชทนี้ถูกปิดแล้ว กรุณาประเมินการให้บริการ',new_chat_btn:'เริ่มแชทใหม่',
  status_open:'เปิดอยู่',status_closed:'ปิดแล้ว',
- brand:'#2b6cff',bg:'#eef3fc',me:'#2b6cff',staff:'#ffffff',bot:'#e3ecff'
+ brand:'#2b6cff',bg:'#eef3fc',me:'#2b6cff',staff:#ffffff,bot:'#e3ecff'
 };
 const DEF_FAQ=[
- {q:'ตารางเรียน',k:'ตารางเรียน,ตารางสอน,คาบเรียน',a:'ตารางเรียนประกาศที่บอร์ดหน้าห้องเรียนและทางเว็บไซต์โรงเรียน (แก้ข้อความนี้ได้ในโหมดผู้ดูแล)'},
- {q:'การชำระเงิน',k:'ชำระเงิน,จ่ายเงิน,ค่าเทอม,ค่าเล่าเรียน',a:'ชำระค่าเทอมได้ที่ห้องการเงิน หรือโอนผ่านบัญชีโรงเรียน (แก้ข้อความนี้ได้ในโหมดผู้ดูแล)'},
- {q:'เวลาเปิดทำการ',k:'เวลาเปิด,เวลาทำการ,เปิดกี่โมง,ปิดกี่โมง',a:'เปิดทำการวันจันทร์–ศุกร์ เวลา 08:00–16:30 น. (แก้ข้อความนี้ได้ในโหมดผู้ดูแล)'},
- {q:'ติดต่อเจ้าหน้าที่',k:'ติดต่อเจ้าหน้าที่,คุยกับเจ้าหน้าที่,แอดมิน,ครู',a:'กดเมนู "คุยกับเจ้าหน้าที่" ด้านบน แล้วยืนยันตัวตนด้วยรหัสนักเรียนเพื่อส่งข้อความถึงเจ้าหน้าที่ได้เลย'}
+ {q:'ตารางเรียน',k:'ตารางเรียน,ตารางสอน,คาบเรียน',a:'ตารางเรียนประกาศที่บอร์ดหน้าห้องเรียนและทางเว็บไซต์โรงเรียน'},
+ {q:'การชำระเงิน',k:'ชำระเงิน,จ่ายเงิน,ค่าเทอม',a:'ชำระค่าเทอมได้ที่ห้องการเงิน หรือโอนผ่านบัญชีโรงเรียน'},
+ {q:'เวลาเปิดทำการ',k:'เวลาเปิด,เวลาทำการ,เปิดกี่โมง',a:'เปิดทำการวันจันทร์–ศุกร์ เวลา 08:00–16:30 น.'},
+ {q:'ติดต่อเจ้าหน้าที่',k:'ติดต่อเจ้าหน้าที่,แอดมิน,ครู',a:'กดเมนู "คุยกับเจ้าหน้าที่" ด้านบน แล้วยืนยันตัวตนด้วยรหัสนักเรียน'}
 ];
 let C={...DEF}, FAQ=JSON.parse(JSON.stringify(DEF_FAQ));
 
-/* ============ ตัวช่วย ============ */
 const _mem={};
 const _store=(()=>{try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return localStorage}catch(_){return {getItem:k=>_mem[k]??null,setItem:(k,v)=>{_mem[k]=v},removeItem:k=>{delete _mem[k]}}}})();
 const db=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:_store,detectSessionInUrl:false,lock:async(n,t,fn)=>await fn()}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-// แสดงวันที่และเวลา เช่น 14 ต.ค. 69 14:11
 const ftime=v=>new Date(v).toLocaleString('th-TH',{day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 function toast(m,bad){const t=document.createElement('div');t.className='toast'+(bad?' bad':'');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
 const scrollEnd=el=>{el.scrollTop=el.scrollHeight;};
 
-/* ---------- ฟองข้อความ + ตัวบอกว่ากำลังพิมพ์ ---------- */
 const bubbleHtml=(cls,text,time)=>`<div class="msg ${cls}"><div class="t">${esc(text)}</div><small>${ftime(time)}</small></div>`;
 function dbBubble(m,viewerRole){return bubbleHtml(m.sender_role===viewerRole?'me':'staff',m.message,m.created_at);}
 function showTyping(log,cls='staff'){
   if(log.querySelector('.typing'))return;
-  const d=document.createElement('div');d.className='msg typing '+cls;d.setAttribute('aria-label','กำลังพิมพ์');d.innerHTML='<i></i><i></i><i></i>';
+  const d=document.createElement('div');d.className='msg typing '+cls;d.innerHTML='<i></i><i></i><i></i>';
   log.appendChild(d);scrollEnd(log);
 }
 const hideTyping=log=>log&&log.querySelectorAll('.typing').forEach(x=>x.remove());
 
-/* ============ ใช้ค่าตั้งต้น/สี ============ */
 function applyTheme(){
   const r=document.documentElement.style,ok=c=>/^#[0-9a-f]{6}$/i.test(c);
   [['brand','--brand'],['bg','--bg'],['me','--me'],['staff','--staff'],['bot','--bot']].forEach(([k,v])=>{if(ok(C[k]))r.setProperty(v,C[k]);});
 }
 function applyText(){
   applyTheme();
-  document.title=C.site_name;
-  $('hTitle').textContent=C.site_name;$('hLogo').textContent=C.logo||'🏫';
+  document.title='แชทโรงเรียน';
   $('tabBot').textContent=C.tab_bot;$('tabPriv').textContent=C.tab_priv;
   $('wTitle').textContent=C.welcome_title;$('wText').textContent=C.welcome_text;
-  $('faqTitle').textContent=C.faq_title;$('botIn').placeholder=C.bot_placeholder;$('botSend').textContent=C.send_btn;
-  $('lgTitle').textContent=C.login_title;$('lgText').textContent=C.login_text;$('lgCodeL').textContent=C.code_label;$('lgBtn').textContent=C.login_btn;
+  $('faqTitle').textContent=C.faq_title;$('botIn'].placeholder=C.bot_placeholder;$('botSend').textContent=C.send_btn;
+  $('lgTitle').textContent=C.login_title;$('lgCodeL').textContent=C.code_label;$('lgBtn').textContent=C.login_btn;
   $('privIn').placeholder=C.priv_placeholder;$('privSend').textContent=C.send_btn;$('lgOut').textContent=C.logout_btn;
   $('closedText').textContent=C.closed_text;$('newChat').textContent=C.new_chat_btn;
   renderChips();updateStatus();
@@ -271,23 +256,60 @@ async function loadCfg(){
     const r=await db.from(SETTINGS_TABLE).select('*').like('key',KEY_PREFIX.replace('_','\\_')+'%');
     if(!r.error)(r.data||[]).forEach(x=>{
       const k=x.key.slice(KEY_PREFIX.length);
-      if(k==='faq'){try{const a=JSON.parse(x.value);if(Array.isArray(a))FAQ=a;}catch(_){}}
+      if(k==='faq'){try{const a=JSON.parse(x.value);if(Array.isArray(a))FAQ=a;}catch(_}{}}
       else if(k in DEF&&x.value!=null&&String(x.value).trim()!=='')C[k]=x.value;
     });
   }catch(_){}
   applyText();
 }
 
-/* ============ บอท ============ */
+function stringSimilarity(s1, s2) {
+  let longer = s1, shorter = s2;
+  if (s1.length < s2.length) { longer = s2; shorter = s1; }
+  let longerLength = longer.length;
+  if (longerLength === 0) return 1.0;
+  return (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+}
+function editDistance(s1, s2) {
+  s1 = s1.toLowerCase(); s2 = s2.toLowerCase();
+  let costs = new Array();
+  for (let i = 0; i <= s1.length; i++) {
+    let lastValue = i;
+    for (let j = 0; j <= s2.length; j++) {
+      if (i === 0) costs[j] = j;
+      else {
+        if (j > 0) {
+          let newValue = costs[j - 1];
+          if (s1.charAt(i - 1) !== s2.charAt(j - 1))
+            newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+          costs[j - 1] = lastValue;
+          lastValue = newValue;
+        }
+      }
+    }
+    if (i > 0) costs[s2.length] = lastValue;
+  }
+  return costs[s2.length];
+}
+
 async function botAnswer(text){
   const t=text.trim().toLowerCase();
+  let bestMatch = null, highestScore = 0;
   for(const f of FAQ){
-    const keys=(f.k||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-    if(f.q&&t===f.q.trim().toLowerCase())return f.a;
-    if(keys.some(k=>t.includes(k)))return f.a;
+    const qText = (f.q || '').trim().toLowerCase();
+    const keys = (f.k || '').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+    if(qText && t === qText || keys.some(k=>t.includes(k))) return f.a;
+    let scoreQ = stringSimilarity(t, qText);
+    if(scoreQ > highestScore) { highestScore = scoreQ; bestMatch = f.a; }
+    for(const k of keys){
+      let scoreK = stringSimilarity(t, k);
+      if(scoreK > highestScore) { highestScore = scoreK; bestMatch = f.a; }
+    }
   }
+  if(highestScore >= 0.4) return bestMatch;
   return null;
 }
+
 function renderChips(){
   $('chips').innerHTML=FAQ.filter(f=>f.q).map((f,i)=>`<button class="chip" type="button" data-i="${i}">${esc(f.q)}</button>`).join('');
   $('faqTitle').classList.toggle('hide',!FAQ.some(f=>f.q));$('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>askBot(FAQ[b.dataset.i].q));
@@ -307,9 +329,8 @@ async function askBot(text){
   addBotMsg('bot',a||C.fallback);
   botBusy=false;
 }
-$('botForm').onsubmit=ev=>{ev.preventDefault();const v=$('botIn').value;$('botIn').value='';askBot(v);};
+$('botForm').onsubmit=ev=>{ev.preventDefault();const v=$('botIn'].value;$('botIn'].value='';askBot(v);};
 
-/* ============ เมนูผู้ใช้ ============ */
 function userTab(t){
   $('tabBot').classList.toggle('on',t==='bot');$('tabPriv').classList.toggle('on',t==='priv');
   $('botPane').classList.toggle('hide',t!=='bot');$('privPane').classList.toggle('hide',t!=='priv');
@@ -317,7 +338,6 @@ function userTab(t){
 }
 $('tabBot').onclick=()=>userTab('bot');$('tabPriv').onclick=()=>userTab('priv');
 
-/* ============ ตัวบอกว่า "กำลังพิมพ์" ============ */
 let TY=null;
 function openTyping(sid,role,getLog){
   closeTyping();
@@ -335,7 +355,6 @@ function pingTyping(){
 }
 function closeTyping(){if(TY){db.removeChannel(TY.ch);TY=null;}}
 
-/* ============ นักเรียน: ยืนยันตัวตน + แชทส่วนตัว ============ */
 let ST=null,SESSION=null,chStudent=null;
 async function initPrivate(){
   if(ST)return;
@@ -345,60 +364,27 @@ async function initPrivate(){
   if(!a.data)return showLogin();
   enterStudent(a.data);
 }
-let CLASSES_LOADED=false;
-async function loadClasses(){
-  if(CLASSES_LOADED)return;
-  const r=await db.rpc('list_classes');
-  if(r.error){console.error('list_classes',r.error);$('room').innerHTML='<option value="">โหลดรายชื่อห้องไม่สำเร็จ</option>';return;}
-  $('room').innerHTML='<option value="">— เลือกห้อง —</option>'+(r.data||[]).map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
-  CLASSES_LOADED=true;
-}
-function showLogin(){$('loginBox').classList.remove('hide');$('chatBox').classList.add('hide');loadClasses();}$('code').oninput=ev=>{ev.target.value=ev.target.value.replace(/\D/g,'').slice(0,3);};
+function showLogin(){$('loginBox').classList.remove('hide');$('chatBox').classList.add('hide');}$('code').oninput=ev=>{ev.target.value=ev.target.value.replace(/\D/g,'').slice(0,5);};
 
-/* ส่วนที่แก้ไขปัญหา: ล็อกอินด้วย Anonymous Session และป้องกัน Race Condition */
 $('loginForm').onsubmit=async ev=>{
   ev.preventDefault();
   $('lgErr').textContent='';
-  const room=$('room').value,no=$('code').value.trim();
-  if(!room||!/^\d{1,3}$/.test(no))return$('lgErr').textContent='กรุณาเลือกห้องและกรอกเลขที่';
-  
-  const b=$('lgBtn');
-  b.disabled=true;
-  b.textContent='กำลังตรวจสอบ...';
-  
+  const code=$('code').value.trim();
+  if(!/^\d{5}$/.test(code))return$('lgErr').textContent='กรุณากรอกรหัสนักเรียนให้ครบ 5 หลัก';
+  const b=$('lgBtn');b.disabled=true;b.textContent='กำลังตรวจสอบ...';
   try{
-    // ตรวจสอบหรือสร้าง Session แบบ Anonymous
     let { data: sessData } = await db.auth.getSession();
     if (!sessData?.session) {
       const s = await db.auth.signInAnonymously();
-      if(s.error){
-        console.error('anon sign-in error:', s.error);
-        $('lgErr').textContent='ระบบยืนยันตัวตนขัดข้อง (กรุณาเปิดใช้งาน Anonymous Sign-ins ใน Supabase)';
-        return;
-      }
-      await sleep(300); // หน่วงเวลาเล็กน้อยเพื่อให้ระบบตั้งค่า Session เรียบร้อยสมบูรณ์
+      if(s.error){$('lgErr').textContent='เปิดใช้งาน Anonymous ใน Supabase ก่อนครับ';return;}
+      await sleep(300);
     }
-
-    const r=await db.rpc('student_login',{p_class:room,p_no:no});
-    if(r.error||!r.data){
-      console.error('student_login error:', r.error);
-      if (r.error && r.error.message.includes('not_found')) {
-        $('lgErr').textContent = C.login_err;
-      } else {
-        $('lgErr').textContent = `ระบบยืนยันตัวตนขัดข้อง (${r.error?.message || 'ไม่พบข้อมูล'})`;
-      }
-      return;
-    }
-    
-    $('code').value='';
+    const r=await db.rpc('student_login',{p_code:code});
+    if(r.error||!r.data){$('lgErr').textContent=C.login_err;return;}$('code').value='';
     enterStudent(r.data);
   }catch(err){
-    console.error('Unexpected login error:', err);
-    $('lgErr').textContent='ระบบยืนยันตัวตนขัดข้อง (เข้าสู่ระบบไม่สำเร็จ) กรุณาแจ้งผู้ดูแล';
-  }finally{
-    b.disabled=false;
-    b.textContent=C.login_btn;
-  }
+    $('lgErr').textContent='ระบบยืนยันตัวตนขัดข้อง กรุณาตรวจสอบรหัสอีกครั้ง';
+  }finally{b.disabled=false;b.textContent=C.login_btn;}
 };
 
 async function enterStudent(acc){
@@ -410,6 +396,7 @@ async function openSession(forceNew){
   const r=await db.rpc('my_chat',{p_new:forceNew});
   if(r.error){toast('เปิดห้องแชทไม่สำเร็จ',true);return;}
   SESSION=r.data;
+  $('ratingArea').classList.remove('hide');$('ratedThanks').classList.add('hide');
   await loadPrivMsgs();updateStatus();subscribeStudent();
   openTyping(SESSION.id,'student',()=>$('privLog'));
 }
@@ -426,15 +413,23 @@ function updateStatus(){
   $('stStatus').className='pill'+(closed?' c':'');
   $('privForm').classList.toggle('hide',closed);$('closedBox').classList.toggle('hide',!closed);
 }
+async function rateSession(score){
+  if(!SESSION)return;
+  const r=await db.rpc('rate_chat_session',{p_session_id:SESSION.id,p_rating:score});
+  if(!r.error){
+    $('ratingArea').classList.add('hide');$('ratedThanks').classList.remove('hide');
+    toast('ขอบคุณสำหรับการประเมินครับ');
+  }
+}
 $('privIn').addEventListener('input',pingTyping);$('privForm').onsubmit=async ev=>{
   ev.preventDefault();
-  const text=$('privIn').value.trim();if(!text||!SESSION)return;
+  const text=$('privIn'].value.trim();if(!text||!SESSION)return;
   const {data}=await db.auth.getSession();
   $('privSend').disabled=true;
   const r=await db.from('chat_messages').insert({session_id:SESSION.id,sender_id:data.session.user.id,sender_role:'student',message:text});
   $('privSend').disabled=false;
-  if(r.error)return toast('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง',true);
-  $('privIn').value='';
+  if(r.error)return toast('ส่งไม่สำเร็จ',true);
+  $('privIn'].value='';
   await loadPrivMsgs();
 };
 $('newChat').onclick=()=>openSession(true);$('lgOut').onclick=async()=>{
@@ -449,7 +444,6 @@ function subscribeStudent(){
     .on('postgres_changes',{event:'UPDATE',schema:'public',table:'chat_sessions',filter:'id=eq.'+SESSION.id},p=>{SESSION=p.new;updateStatus();})
     .subscribe();
 }
-setInterval(()=>{if(SESSION&&ST&&!$('privPane').classList.contains('hide')&&!$('privLog').querySelector('.typing'))loadPrivMsgs();},10000);
 
 /* ============ แอดมิน ============ */
 let ADMIN=false,SEL=null,ROOMS=[],chAdmin=null,aTab='chat';
@@ -503,13 +497,20 @@ async function loadRooms(){
   if(SEL){const cur=ROOMS.find(x=>x.id===SEL.id);if(cur){SEL=cur;renderAdminChatHead();}}
 }
 function renderRooms(){
-  $('rooms').innerHTML=ROOMS.map(s=>`<button class="room ${SEL&&SEL.id===s.id?'on':''}" data-id="${esc(s.id)}"><b>${s.admin_unread?'<span class="dot"></span>':''}${esc(s.student_name||'รหัส '+s.student_code)}<span class="pill ${s.status==='closed'?'c':''}" style="margin-left:auto">${esc(s.status==='closed'?C.status_closed:C.status_open)}</span></b><span class="meta">รหัส ${esc(s.student_code)} · ${ftime(s.last_message_at)}</span></button>`).join('')||'<div class="meta" style="padding:20px;text-align:center">ยังไม่มีห้องแชท</div>';
+  $('rooms').innerHTML=ROOMS.map(s=>`<button class="room ${SEL&&SEL.id===s.id?'on':''}" data-id="${esc(s.id)}"><b>${s.admin_unread?'<span class="dot"></span>':''}${esc(s.student_name||'รหัส '+s.student_code)}${s.rating?' <span style="font-size:11px">'+esc(s.rating)+'</span>':''}</b><span class="meta">รหัส ${esc(s.student_code)} · ${ftime(s.last_message_at)}</span></button>`).join('')||'<div class="meta" style="padding:20px;text-align:center">ยังไม่มีห้องแชท</div>';
   $('rooms').querySelectorAll('.room').forEach(b=>b.onclick=()=>selectRoom(b.dataset.id));
   if(!SEL)$('admChat').innerHTML='<div class="center meta">เลือกห้องแชททางซ้ายเพื่ออ่านและตอบกลับ</div>';
 }
 async function selectRoom(id){
   SEL=ROOMS.find(x=>x.id===id);if(!SEL)return;
-  $('admGrid').classList.add('chatopen');$('admChat').innerHTML=`<div class="bar2" id="admHead"></div><div class="log" id="admLog"></div><form class="send" id="admSend" autocomplete="off"><input id="admIn" maxlength="1000" placeholder="พิมพ์ข้อความตอบกลับ..." aria-label="ตอบกลับ"><button class="btn">ส่งข้อความ</button></form>`;
+  $('admGrid').classList.add('chatopen');$('admChat').innerHTML=`
+    <div class="bar2" id="admHead"></div>
+    <div class="log" id="admLog"></div>
+    <div class="quick-btns">
+      <button class="quick-btn" onclick="sendQuickMsg('ขอบคุณที่ติดต่อเข้ามาครับ มีอะไรให้ช่วยเหลือเพิ่มเติมไหมครับ?')">💬 ขอบคุณที่ติดต่อ</button>
+      <button class="quick-btn" onclick="sendQuickMsg('เจ้าหน้าที่ได้รับเรื่องเรียบร้อยแล้วครับ ขอบคุณครับ')">✅ รับเรื่องแล้ว</button>
+    </div>
+    <form class="send" id="admSend" autocomplete="off"><input id="admIn" maxlength="1000" placeholder="พิมพ์ข้อความตอบกลับ..." aria-label="ตอบกลับ"><button class="btn">ส่งข้อความ</button></form>`;
   renderAdminChatHead();
   $('admSend').onsubmit=sendAdmin;
   $('admIn').addEventListener('input',pingTyping);
@@ -520,12 +521,22 @@ async function selectRoom(id){
 function renderAdminChatHead(){
   const h=$('admHead');if(!h||!SEL)return;
   const closed=SEL.status==='closed';
-  h.innerHTML=`<div><button class="btn o s" id="admBackBtn" type="button" style="margin-right:6px">←</button><b>${esc(SEL.student_name||'รหัส '+SEL.student_code)}</b> <span class="pill ${closed?'c':''}">${esc(closed?C.status_closed:C.status_open)}</span></div><button class="btn ${closed?'':'r'} s" id="admToggle" type="button">${closed?'เปิดห้องอีกครั้ง':'ปิดห้องแชท'}</button>`;
+  h.innerHTML=`<div><button class="btn o s" id="admBackBtn" type="button" style="margin-right:6px">←</button><b>${esc(SEL.student_name||'รหัส '+SEL.student_code)}</b> ${SEL.rating?'<span class="pill">'+esc(SEL.rating)+'</span>':''}</div><button class="btn ${closed?'':'r'} s" id="admToggle" type="button">${closed?'เปิดห้องอีกครั้ง':'ปิดห้องแชท & ขอบคุณ'}</button>`;
   $('admBackBtn').onclick=()=>{SEL=null;closeTyping();$('admGrid').classList.remove('chatopen');renderRooms();};$('admToggle').onclick=async()=>{
-    const r=await db.from('chat_sessions').update({status:closed?'open':'closed'}).eq('id',SEL.id).select();
-    if(r.error||!r.data?.length)return toast('เปลี่ยนสถานะไม่สำเร็จ',true);
+    const newStatus = closed ? 'open' : 'closed';
+    await db.from('chat_sessions').update({status:newStatus}).eq('id',SEL.id);
+    if(newStatus==='closed'){
+      const {data}=await db.auth.getSession();
+      await db.from('chat_messages').insert({session_id:SEL.id,sender_id:data.session.user.id,sender_role:'admin',message:'ขอบคุณที่ติดต่อเข้ามาครับ หากมีข้อสงสัยเพิ่มเติมสามารถสอบถามได้เสมอครับ 🙏'});
+    }
     loadRooms();
   };
+}
+async function sendQuickMsg(text){
+  if(!SEL)return;
+  const {data}=await db.auth.getSession();
+  await db.from('chat_messages').insert({session_id:SEL.id,sender_id:data.session.user.id,sender_role:'admin',message:text});
+  loadAdminMsgs();loadRooms();
 }
 async function loadAdminMsgs(){
   if(!SEL||!$('admLog'))return;
@@ -535,11 +546,10 @@ async function loadAdminMsgs(){
 }
 async function sendAdmin(ev){
   ev.preventDefault();
-  const text=$('admIn').value.trim();if(!text||!SEL)return;
+  const text=$('admIn'].value.trim();if(!text||!SEL)return;
   const {data}=await db.auth.getSession();
-  const r=await db.from('chat_messages').insert({session_id:SEL.id,sender_id:data.session.user.id,sender_role:'admin',message:text});
-  if(r.error)return toast('ส่งไม่สำเร็จ',true);
-  $('admIn').value='';loadAdminMsgs();loadRooms();
+  await db.from('chat_messages').insert({session_id:SEL.id,sender_id:data.session.user.id,sender_role:'admin',message:text});
+  $('admIn'].value='';loadAdminMsgs();loadRooms();
 }
 function subscribeAdmin(){
   if(chAdmin)db.removeChannel(chAdmin);
@@ -550,189 +560,29 @@ function subscribeAdmin(){
       if(SEL&&p.new.session_id===SEL.id){loadAdminMsgs();if(p.new.sender_role==='student')db.from('chat_sessions').update({admin_unread:false}).eq('id',SEL.id).then(()=>{});}
     }).subscribe();
 }
-setInterval(()=>{if(ADMIN&&aTab==='chat'){loadRooms();if($('admLog')&&!$('admLog').querySelector('.typing'))loadAdminMsgs();}},15000);
 
-/* ============ แอดมิน: จัดการรายชื่อนักเรียน ============ */
-let STU=[],stuQ='';
-function parseStudents(text){
-  const rows=new Map();let bad=0,dup=0;
-  text.replace(/^﻿/,'').split(/\r?\n/).forEach((line,i)=>{
-    if(!line.trim())return;
-    const c=line.split(/\t|,/).map(s=>s.trim().replace(/^"|"$/g,''));
-    if(i===0&&!/^\d+$/.test(c[0]))return;
-    if(!/^\d{5}$/.test(c[0])||!c[1]){bad++;return;}
-    if(rows.has(c[0]))dup++;
-    const no=parseInt(c[2],10);
-    rows.set(c[0],{student_code:c[0],student_name:c[1],student_no:Number.isNaN(no)?null:no,class_name:c[3]||null});
-  });
-  return {rows:[...rows.values()],bad,dup};
-}
-async function saveStudents(rows){
-  for(let i=0;i<rows.length;i+=500){
-    const r=await db.from('chat_students').upsert(rows.slice(i,i+500),{onConflict:'student_code'}).select('id');
-    if(r.error)throw r.error;
-  }
-}
 function renderStudents(){
-  $('stuPane').innerHTML=`
-  <div class="card panel"><h2>เพิ่มนักเรียนทีละหลายคน</h2>
-    <p class="meta" style="margin:0 0 12px">วางข้อมูลจาก Excel / Google Sheets หรือพิมพ์บรรทัดละหนึ่งคน รูปแบบ <b>รหัส 5 หลัก, ชื่อ, เลขที่, ห้อง</b></p>
-    <textarea id="bulk" style="min-height:150px" placeholder="12345, ด.ช. สมชาย ใจดี, 1, ม.1/1&#10;12346, ด.ญ. สมหญิง รักเรียน, 2, ม.1/1"></textarea>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center">
-      <button class="btn" id="bulkGo" type="button">เพิ่มทั้งหมด</button>
-      <label class="btn o" style="cursor:pointer">นำเข้าไฟล์ CSV<input id="csvIn" type="file" accept=".csv,.txt,text/csv,text/plain" hidden></label>
-      <span class="meta" id="bulkInfo"></span>
-    </div></div>
-  <div class="card panel"><h2>ดึงรายชื่อจากระบบเดิม (sp_students)</h2>
-    <p class="meta" style="margin:0 0 12px">ดึงชื่อ เลขที่ ห้อง ที่มีอยู่แล้วมาแสดง แล้วใส่รหัสนักเรียน 5 หลักของแต่ละคน</p>
-    <button class="btn" id="spLoad" type="button">โหลดรายชื่อจากระบบเดิม</button>
-    <div id="spBox" class="hide" style="margin-top:14px">
-      <label class="lbl" for="spPaste" style="margin-top:0">วางรหัสเป็นกลุ่ม (ไม่บังคับ)</label>
-      <textarea id="spPaste" style="min-height:90px" placeholder="ม.1/1, 1, 12345"></textarea>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn o" id="spFill" type="button">เติมรหัส</button><button class="btn" id="spSave" type="button">บันทึกรหัสที่กรอก</button><span class="meta" id="spInfo" style="align-self:center"></span></div>
-      <div id="spList"></div>
-    </div></div>
-  <div class="card panel"><h2>เพิ่มทีละคน</h2>
-    <div class="grid2" style="margin-top:10px">
-      <div><label class="lbl" for="n_code" style="margin-top:0">รหัสนักเรียน (5 หลัก)</label><input id="n_code" inputmode="numeric" maxlength="5"></div>
-      <div><label class="lbl" for="n_name" style="margin-top:0">ชื่อ</label><input id="n_name"></div>
-      <div><label class="lbl" for="n_no" style="margin-top:0">เลขที่</label><input id="n_no" inputmode="numeric"></div>
-      <div><label class="lbl" for="n_cls" style="margin-top:0">ห้อง</label><input id="n_cls"></div>
-    </div>
-    <button class="btn" id="oneGo" type="button" style="margin-top:14px">เพิ่มนักเรียน</button></div>
-  <div class="card panel"><h2>รายชื่อนักเรียน</h2><p class="meta" id="stuCount" style="margin:0 0 10px"></p>
-    <input id="stuQ" placeholder="ค้นหารหัส ชื่อ เลขที่ หรือห้อง" value="${esc(stuQ)}" style="margin-bottom:10px">
-    <div id="stuList"><div class="meta">กำลังโหลด...</div></div></div>`;
-  $('n_code').oninput=ev=>{ev.target.value=ev.target.value.replace(/\D/g,'').slice(0,5);};
-  $('stuQ').oninput=ev=>{stuQ=ev.target.value;drawStudents();};$('csvIn').onchange=async ev=>{
-    const f=ev.target.files[0];if(!f)return;
-    $('bulk').value=await f.text();ev.target.value='';
-    const p=parseStudents($('bulk').value);$('bulkInfo').textContent=`อ่านได้ ${p.rows.length} คน`+(p.bad?` · ผิดรูปแบบ ${p.bad} บรรทัด`:'');
-  };
-  $('bulkGo').onclick=async()=>{
-    const p=parseStudents($('bulk').value);
-    if(!p.rows.length)return toast('ไม่พบข้อมูลที่ถูกต้อง ตรวจรูปแบบอีกครั้ง',true);
-    if(!confirm(`เพิ่ม/อัปเดตนักเรียน ${p.rows.length} คน?`))return;
-    const b=$('bulkGo');b.disabled=true;
-    try{await saveStudents(p.rows);$('bulk').value='';$('bulkInfo').textContent='';toast(`บันทึก ${p.rows.length} คนแล้ว`);loadStudents();}
-    catch(err){toast('บันทึกไม่สำเร็จ: '+err.message,true);}
-    finally{b.disabled=false;}
-  };
-  $('oneGo').onclick=async()=>{
-    const code=$('n_code').value,name=$('n_name').value.trim(),no=parseInt($('n_no').value,10);
-    if(!/^\d{5}$/.test(code)||!name)return toast('กรอกรหัส 5 หลักและชื่อ',true);
-    try{
-      await saveStudents([{student_code:code,student_name:name,student_no:Number.isNaN(no)?null:no,class_name:$('n_cls').value.trim()||null}]);
-      ['n_code','n_name','n_no','n_cls'].forEach(i=>$(i).value='');toast('เพิ่มแล้ว');loadStudents();
-    }catch(err){toast('บันทึกไม่สำเร็จ: '+err.message,true);}
-  };
-  $('spLoad').onclick=loadSp;
-  $('spFill').onclick=fillSp;
-  $('spSave').onclick=saveSp;
-  loadStudents();
-}
-let SPS=[];
-const spKey=(n,c,no)=>`${String(n||'').trim()}|${String(c||'').trim()}|${no??''}`;
-async function loadSp(){
-  const b=$('spLoad');b.disabled=true;b.textContent='กำลังโหลด...';
-  const r=await db.from('sp_students').select('*').order('class_name').order('number',{nullsFirst:false}).limit(5000);
-  b.disabled=false;b.textContent='โหลดรายชื่อจากระบบเดิมอีกครั้ง';
-  if(r.error)return toast('โหลดไม่สำเร็จ: '+r.error.message,true);
-  SPS=r.data||[];$('spBox').classList.remove('hide');drawSp();
-}
-function drawSp(){
-  const have=new Map(STU.map(s=>[spKey(s.student_name,s.class_name,s.student_no),s.student_code]));
-  $('spList').innerHTML=SPS.map((s,i)=>`<div style="display:flex;gap:10px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line)"><span style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(s.name)}<br><span class="meta">เลขที่ ${esc(s.number??'-')} · ${esc(s.class_name||'-')}</span></span><input data-sp="${i}" inputmode="numeric" maxlength="5" placeholder="รหัส 5 หลัก" aria-label="รหัสของ ${esc(s.name)}" value="${esc(have.get(spKey(s.name,s.class_name,s.number))||'')}" style="width:110px"></div>`).join('')||'<div class="meta">ไม่พบรายชื่อใน sp_students</div>';
-  $('spList').querySelectorAll('input').forEach(el=>el.oninput=()=>{el.value=el.value.replace(/\D/g,'').slice(0,5);});$('spInfo').textContent=`${SPS.length} คน`;
-}
-function fillSp(){
-  let ok=0,miss=0;
-  const inputs=[...$('spList').querySelectorAll('input')];$('spPaste').value.split(/\r?\n/).forEach(line=>{
-    if(!line.trim())return;
-    const c=line.split(/\t|,/).map(s=>s.trim().replace(/^"|"$/g,''));
-    const code=c[c.length-1];
-    if(!/^\d{5}$/.test(code)){miss++;return;}
-    const i=c.length>=3?SPS.findIndex(s=>String(s.class_name||'').trim()===c[0]&&String(s.number??'')===c[1])
-                       :SPS.findIndex(s=>String(s.name||'').trim()===c[0]);
-    if(i<0){miss++;return;}
-    inputs[i].value=code;ok++;
-  });
-  $('spInfo').textContent=`เติมแล้ว ${ok} คน`+(miss?` · ไม่พบ/ผิดรูปแบบ ${miss} บรรทัด`:'');
-}
-async function saveSp(){
-  const rows=[],seen=new Set();let bad=0;
-  $('spList').querySelectorAll('input').forEach(el=>{
-    const v=el.value.trim();if(!v)return;
-    const s=SPS[+el.dataset.sp];
-    if(!/^\d{5}$/.test(v)||seen.has(v)){bad++;return;}
-    seen.add(v);
-    const no=parseInt(s.number,10);
-    rows.push({student_code:v,student_name:String(s.name||'').trim(),student_no:Number.isNaN(no)?null:no,class_name:s.class_name||null});
-  });
-  if(bad)return toast(`มีรหัสที่ไม่ครบ 5 หลักหรือซ้ำกัน ${bad} ช่อง`,true);
-  if(!rows.length)return toast('ยังไม่ได้กรอกรหัสนักเรียน',true);
-  if(!confirm(`บันทึกรหัสนักเรียน ${rows.length} คน?`))return;
-  const b=$('spSave');b.disabled=true;
-  try{await saveStudents(rows);toast(`บันทึก ${rows.length} คนแล้ว`);await loadStudents();drawSp();}
-  catch(err){toast('บันทึกไม่สำเร็จ: '+err.message,true);}
-  finally{b.disabled=false;}
-}
-async function loadStudents(){
-  const r=await db.from('chat_students').select('*').order('class_name',{nullsFirst:false}).order('student_no',{nullsFirst:false}).limit(5000);
-  if(r.error){$('stuList').innerHTML=`<div class="meta">โหลดไม่สำเร็จ: ${esc(r.error.message)}</div>`;return;}
-  STU=r.data||[];drawStudents();
-}
-function drawStudents(){
-  if(!$('stuList'))return;
-  const q=stuQ.trim().toLowerCase();
-  const rows=STU.filter(s=>!q||`${s.student_code} ${s.student_name} ${s.class_name||''} ${s.student_no??''}`.toLowerCase().includes(q));
-  $('stuCount').textContent=`ทั้งหมด ${STU.length} คน`+(q?` · พบ ${rows.length} คน`:'');
-  $('stuList').innerHTML=rows.slice(0,300).map(s=>`<div style="display:flex;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line)"><b style="width:60px;flex:none">${esc(s.student_code)}</b><span style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(s.student_name)}<br><span class="meta">เลขที่ ${esc(s.student_no??'-')} · ${esc(s.class_name||'-')}</span></span><button class="btn o s" type="button" data-del="${esc(s.id)}">ลบ</button></div>`).join('')||'<div class="meta" style="padding:14px 0">ยังไม่มีรายชื่อ</div>';
-  $('stuList').querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
-    const s=STU.find(x=>x.id===b.dataset.del);
-    if(!s||!confirm(`ลบ ${s.student_name} (รหัส ${s.student_code})?`))return;
-    const r=await db.from('chat_students').delete().eq('id',s.id).select();
-    if(r.error||!r.data?.length)return toast('ลบไม่สำเร็จ',true);
-    toast('ลบแล้ว');loadStudents();
+  $('stuPane').innerHTML=`<div class="card panel"><h2>รายชื่อนักเรียน</h2><div id="stuList"><div class="meta">กำลังโหลด...</div></div></div>`;
+  db.from('chat_students').select('*').limit(500).then(r=>{
+    $('stuList').innerHTML=(r.data||[]).map(s=>`<div style="display:flex;gap:10px;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line)"><b style="width:60px">${esc(s.student_code)}</b><span>${esc(s.student_name)}</span></div>`).join('');
   });
 }
-
-/* ============ แอดมิน: แก้ไขข้อความ/สี/คำถามบอท ============ */
 function renderEdit(){
-  const inp=([k,l])=>`<div><label class="lbl" for="t_${k}" style="margin-top:0">${esc(l)}</label><input id="t_${k}" value="${esc(C[k])}"></div>`;
+  const inp=([k,l])=>`<div><label class="lbl" for="t_${k}">${esc(l)}</label><input id="t_${k}" value="${esc(C[k])}"></div>`;
   $('editPane').innerHTML=`
-  <div class="card panel"><h2>สีของเว็บไซต์</h2><p class="meta" style="margin:0">เปลี่ยนแล้วเห็นผลทันที กด "บันทึกทั้งหมด" เพื่อใช้กับทุกคน</p>
-    <div class="swatches">${COLOR_FIELDS.map(([k,l])=>`<label><input type="color" id="c_${k}" value="${esc(C[k])}">${esc(l)}</label>`).join('')}</div></div>
-  <div class="card panel"><h2>ข้อความทุกส่วน</h2><p class="meta" style="margin:0 0 14px">เว้นว่างไว้เพื่อใช้ข้อความเริ่มต้น</p><div class="grid2">${TEXT_FIELDS.map(inp).join('')}</div></div>
-  <div class="card panel"><h2>คำถามด่วนและคำตอบบอท</h2><p class="meta" style="margin:0 0 14px">คำสำคัญคั่นด้วยเครื่องหมายจุลภาค (,)</p>
-    <div id="faqList"></div><button class="btn o s" id="faqAdd" type="button">+ เพิ่มคำถาม</button></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="saveAll" type="button">บันทึกทั้งหมด</button><button class="btn o" id="resetAll" type="button">คืนค่าเริ่มต้น</button></div>`;
-  COLOR_FIELDS.forEach(([k])=>$('c_'+k).oninput=ev=>{C[k]=ev.target.value;applyTheme();});
-  drawFaq();
-  $('faqAdd').onclick=()=>{readFaq();FAQ.push({q:'',k:'',a:''});drawFaq();};$('saveAll').onclick=saveAll;
-  $('resetAll').onclick=()=>{if(!confirm('คืนข้อความ สี และคำถามทั้งหมดเป็นค่าเริ่มต้น?'))return;C={...DEF};FAQ=JSON.parse(JSON.stringify(DEF_FAQ));applyText();renderEdit();};
-}
-function drawFaq(){
-  $('faqList').innerHTML=FAQ.map((f,i)=>`<div class="faqrow"><input data-f="q" data-i="${i}" placeholder="ข้อความบนปุ่มคำถาม" value="${esc(f.q)}"><input data-f="k" data-i="${i}" placeholder="คำสำคัญ คั่นด้วย ," value="${esc(f.k)}"><textarea data-f="a" data-i="${i}" placeholder="คำตอบของบอท">${esc(f.a)}</textarea><button class="btn o s" type="button" data-rm="${i}" style="justify-self:start">ลบคำถามนี้</button></div>`).join('');
-  $('faqList').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{readFaq();FAQ.splice(+b.dataset.rm,1);drawFaq();});
-}
-function readFaq(){document.querySelectorAll('#faqList [data-f]').forEach(el=>{FAQ[+el.dataset.i][el.dataset.f]=el.value;});}
-async function saveAll(){
-  readFaq();
-  const vals={};
-  TEXT_FIELDS.forEach(([k])=>vals[k]=$('t_'+k).value.trim());
-  COLOR_FIELDS.forEach(([k])=>vals[k]=$('c_'+k).value);
-  const faq=FAQ.filter(f=>f.q.trim()||f.a.trim()).map(f=>({q:f.q.trim(),k:f.k.trim(),a:f.a.trim()}));
-  const now=new Date().toISOString();
-  const rows=Object.entries(vals).map(([k,value])=>({key:KEY_PREFIX+k,value,updated_at:now}));
-  rows.push({key:KEY_PREFIX+'faq',value:JSON.stringify(faq),updated_at:now});
-  const r=await db.from(SETTINGS_TABLE).upsert(rows).select();
-  if(r.error||!r.data?.length)return toast('บันทึกไม่สำเร็จ: '+(r.error?.message||'ไม่มีสิทธิ์'),true);
-  C={...DEF};FAQ=JSON.parse(JSON.stringify(DEF_FAQ));await loadCfg();renderEdit();
-  toast('บันทึกเรียบร้อยแล้ว');
+  <div class="card panel"><h2>สีของเว็บไซต์</h2><div class="swatches">${COLOR_FIELDS.map(([k,l])=>`<label><input type="color" id="c_${k}" value="${esc(C[k])}">${esc(l)}</label>`).join('')}</div></div>
+  <div class="card panel"><h2>ข้อความทุกส่วน</h2><div class="grid2">${TEXT_FIELDS.map(inp).join('')}</div></div>
+  <div style="display:flex;gap:8px"><button class="btn" id="saveAll" type="button">บันทึกทั้งหมด</button></div>`;
+  COLOR_FIELDS.forEach(([k])=>$('c_'+k).oninput=ev=>{C[k]=ev.target.value;applyTheme();});$('saveAll').onclick=async()=>{
+    const vals={};
+    TEXT_FIELDS.forEach(([k])=>vals[k]=$('t_'+k).value.trim());
+    COLOR_FIELDS.forEach(([k])=>vals[k]=$('c_'+k).value);
+    const rows=Object.entries(vals).map(([k,value])=>({key:KEY_PREFIX+k,value,updated_at:new Date().toISOString()}));
+    await db.from(SETTINGS_TABLE).upsert(rows);
+    C={...DEF};await loadCfg();toast('บันทึกเรียบร้อยแล้ว');
+  };
 }
 
-/* ============ เริ่มต้น ============ */
 applyText();loadCfg();
 </script>
 </body>
