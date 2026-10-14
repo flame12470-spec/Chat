@@ -145,8 +145,10 @@ form.send .btn{border-radius:999px;flex:none}
       <div class="center" id="loginBox">
         <form class="box" id="loginForm" autocomplete="off">
           <h2 id="lgTitle"></h2><p class="sub" id="lgText"></p>
+          <label class="lbl" for="room">ห้อง</label>
+          <select id="room" required><option value="">กำลังโหลด...</option></select>
           <label class="lbl" for="code" id="lgCodeL"></label>
-          <input id="code" inputmode="numeric" pattern="\d{5}" maxlength="5" required autocomplete="off">
+          <input id="code" inputmode="numeric" pattern="\d{1,3}" maxlength="3" required autocomplete="off">
           <button class="btn" id="lgBtn" style="width:100%;margin-top:16px"></button>
           <p class="err" id="lgErr"></p>
         </form>
@@ -209,9 +211,9 @@ const DEF={
  welcome_title:'สวัสดี ยินดีต้อนรับ 👋',welcome_text:'เลือกคำถามด้านล่าง หรือพิมพ์ถามบอทได้เลย หากต้องการคุยส่วนตัวกับเจ้าหน้าที่ ให้กดเมนู "คุยกับเจ้าหน้าที่" ด้านบน',
  faq_title:'คำถามที่พบบ่อย',bot_placeholder:'พิมพ์คำถามของคุณ...',send_btn:'ส่ง',
  fallback:'ขออภัย บอทยังไม่เข้าใจคำถามนี้ ลองเลือกจากปุ่มคำถามด่วน หรือกดเมนู "คุยกับเจ้าหน้าที่" เพื่อสอบถามเจ้าหน้าที่โดยตรง',
- login_title:'ยืนยันตัวตนนักเรียน',login_text:'กรอกรหัสนักเรียน 5 หลักเพื่อคุยกับเจ้าหน้าที่',
- code_label:'รหัสนักเรียน (ตัวเลข 5 หลัก)',login_btn:'ยืนยันตัวตน',
- login_err:'ไม่สามารถยืนยันตัวตนได้ กรุณาตรวจสอบรหัสนักเรียน',locked_err:'ลองผิดหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่',
+ login_title:'ยืนยันตัวตนนักเรียน',login_text:'เลือกห้องและกรอกเลขที่ของคุณเพื่อคุยกับเจ้าหน้าที่',
+ code_label:'เลขที่',login_btn:'ยืนยันตัวตน',
+ login_err:'ไม่พบข้อมูล กรุณาตรวจสอบห้องและเลขที่',locked_err:'ลองผิดหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่',
  priv_placeholder:'พิมพ์ข้อความถึงเจ้าหน้าที่...',priv_hello:'สวัสดี! พิมพ์ข้อความด้านล่างเพื่อติดต่อเจ้าหน้าที่ได้เลย',
  logout_btn:'ออกจากแชท',closed_text:'ห้องแชทนี้ถูกปิดแล้ว หากต้องการสอบถามเพิ่มเติมสามารถเริ่มแชทใหม่ได้',new_chat_btn:'เริ่มแชทใหม่',
  status_open:'เปิดอยู่',status_closed:'ปิดแล้ว',
@@ -346,27 +348,34 @@ async function initPrivate(){
   if(!a.data)return showLogin();
   enterStudent(a.data);
 }
-function showLogin(){$('loginBox').classList.remove('hide');$('chatBox').classList.add('hide');}
-$('code').oninput=ev=>{ev.target.value=ev.target.value.replace(/\D/g,'').slice(0,5);};
+/* ล็อกอินด้วย ห้อง + เลขที่ จาก sp_students (ตรวจด้วยฟังก์ชัน student_login ในฐานข้อมูล) */
+let CLASSES_LOADED=false;
+async function loadClasses(){
+  if(CLASSES_LOADED)return;
+  const r=await db.rpc('list_classes');
+  if(r.error){console.error('list_classes',r.error);$('room').innerHTML='<option value="">โหลดรายชื่อห้องไม่สำเร็จ</option>';return;}
+  $('room').innerHTML='<option value="">— เลือกห้อง —</option>'+(r.data||[]).map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  CLASSES_LOADED=true;
+}
+function showLogin(){$('loginBox').classList.remove('hide');$('chatBox').classList.add('hide');loadClasses();}
+$('code').oninput=ev=>{ev.target.value=ev.target.value.replace(/\D/g,'').slice(0,3);};
 $('loginForm').onsubmit=async ev=>{
   ev.preventDefault();$('lgErr').textContent='';
-  const code=$('code').value;
-  if(!/^\d{5}$/.test(code))return $('lgErr').textContent=C.login_err;
+  const room=$('room').value,no=$('code').value.trim();
+  if(!room||!/^\d{1,3}$/.test(no))return $('lgErr').textContent='กรุณาเลือกห้องและกรอกเลขที่';
   const b=$('lgBtn');b.disabled=true;b.textContent='กำลังตรวจสอบ...';
   try{
     await db.auth.signOut();
-    const r=await db.functions.invoke('student-login',{body:{code}});
-    if(r.error||!r.data?.token_hash){
-      const st=r.error?.context?.status;
-      console.error('student-login',st,r.error);
-      $('lgErr').textContent=st===429?C.locked_err:st===401?C.login_err:`ระบบยืนยันตัวตนขัดข้อง (${st||'เชื่อมต่อไม่ได้'}) กรุณาแจ้งผู้ดูแล`;return;
+    const s=await db.auth.signInAnonymously();
+    if(s.error){console.error('anon sign-in',s.error);$('lgErr').textContent='ระบบยืนยันตัวตนขัดข้อง (เปิดใช้งานไม่ได้) กรุณาแจ้งผู้ดูแล';return;}
+    const r=await db.rpc('student_login',{p_class:room,p_no:no});
+    if(r.error||!r.data){
+      await db.auth.signOut();
+      console.error('student_login',r.error);
+      $('lgErr').textContent=(!r.error||/not_found/.test(r.error.message))?C.login_err:`ระบบยืนยันตัวตนขัดข้อง (${r.error.message}) กรุณาแจ้งผู้ดูแล`;return;
     }
-    const v=await db.auth.verifyOtp({token_hash:r.data.token_hash,type:'magiclink'});
-    if(v.error)throw v.error;
     $('code').value='';
-    const a=await db.from('student_accounts').select('*').eq('user_id',v.data.user.id).maybeSingle();
-    if(!a.data)throw new Error('no account');
-    enterStudent(a.data);
+    enterStudent(r.data);
   }catch(err){console.error(err);$('lgErr').textContent='ระบบยืนยันตัวตนขัดข้อง (เข้าสู่ระบบไม่สำเร็จ) กรุณาแจ้งผู้ดูแล';}
   finally{b.disabled=false;b.textContent=C.login_btn;}
 };
