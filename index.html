@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แชทช่วยเหลือนักเรียน</title>
+<link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f5fa;color:#111827;font:15px Anuphan,sans-serif}
+main{max-width:760px;margin:24px auto;padding:16px}.card{background:#fff;border:1px solid #e1e6ef;border-radius:22px;padding:22px;margin-bottom:16px}
+h1,h2{margin:0 0 8px}.muted{color:#667085;font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap}
+input,button{font:inherit;border-radius:12px;padding:11px 13px}input{width:100%;border:1px solid #d7deea;margin:6px 0 12px}
+button{border:0;background:#2b50ff;color:white;cursor:pointer}.soft{background:#edf1ff;color:#2443c7}.wide{width:100%}
+#messages{height:360px;overflow:auto;background:#f5f7fb;border-radius:16px;padding:12px;margin:14px 0}
+.msg{white-space:pre-wrap;padding:10px 12px;border-radius:14px;background:white;margin:8px 0;max-width:90%}.mine{margin-left:auto;background:#dfe7ff}
+#status{font-size:13px;color:#667085}.hide{display:none!important}
+</style></head>
+<body><main>
+<section id="auth" class="card">
+<h1>🎓 เข้าสู่ระบบนักเรียน</h1>
+<p class="muted">ลงทะเบียนครั้งแรกต้องใช้เลขประจำตัวและรหัสลงทะเบียนครั้งเดียวที่โรงเรียนออกให้</p>
+<div class="row"><button id="loginTab" class="soft">เข้าสู่ระบบ</button><button id="enrollTab" class="soft">ลงทะเบียนครั้งแรก</button></div>
+<form id="loginForm">
+<label>เลขประจำตัวนักเรียน</label><input id="loginNumber" autocomplete="username" required>
+<label>รหัสผ่าน</label><input id="loginPassword" type="password" autocomplete="current-password" required>
+<button class="wide">เข้าสู่ระบบ</button></form>
+<form id="enrollForm" class="hide">
+<label>เลขประจำตัวนักเรียน</label><input id="enrollNumber" required>
+<label>รหัสลงทะเบียนครั้งเดียวจากโรงเรียน</label><input id="enrollCode" autocomplete="one-time-code" required>
+<label>ตั้งรหัสผ่าน (อย่างน้อย 10 ตัวอักษร)</label><input id="enrollPassword" type="password" minlength="10" required>
+<button class="wide">ลงทะเบียน</button></form>
+<p id="authMsg" role="status"></p>
+</section>
+<section id="chat" class="card hide">
+<div class="row" style="justify-content:space-between;align-items:center"><h2>💬 ศูนย์ช่วยเหลือนักเรียน</h2><button id="logout" class="soft">ออกจากระบบ</button></div>
+<div id="status">กำลังเชื่อมต่อ…</div>
+<div class="row" id="menu">
+<button class="soft" data-q="ค่ากีฬาสีเท่าไร">💰 ค่ากีฬาสี</button>
+<button class="soft" data-q="ตรวจสอบสถานะการจ่ายเงิน">🧾 สถานะชำระ</button>
+<button class="soft" data-q="วันปิดรับชำระวันไหน">📅 กำหนดชำระ</button>
+<button class="soft" data-q="ขอติดต่อเจ้าหน้าที่">🧑‍💼 เจ้าหน้าที่</button>
+</div>
+<div id="messages" aria-live="polite"></div>
+<form id="sendForm" class="row"><input id="message" maxlength="4000" placeholder="พิมพ์ข้อความ…" required style="flex:1;min-width:180px"><button>ส่ง</button></form>
+</section></main>
+<script>
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+let sessionId = null, channel = null, studentId = null, studentName = "";
+function say(text){ $("authMsg").textContent=text; }
+function syntheticEmail(n){
+  const local=btoa(n.trim().toLowerCase()).replace(/=+$/g,"").replace(/\+/g,"-").replace(/\//g,"_");
+  return `student-${local}@students.invalid`;
+}
+$("loginTab").onclick=()=>{$("loginForm").classList.remove("hide");$("enrollForm").classList.add("hide");say("");};
+$("enrollTab").onclick=()=>{$("enrollForm").classList.remove("hide");$("loginForm").classList.add("hide");say("");};
+
+$("enrollForm").onsubmit=async ev=>{
+  ev.preventDefault(); say("กำลังลงทะเบียน…");
+  const {data,error}=await db.functions.invoke("student-enroll",{body:{
+    studentNumber:$("enrollNumber").value.trim(),
+    code:$("enrollCode").value.trim(),
+    password:$("enrollPassword").value
+  }});
+  if(error||data?.error){say(data?.error||error.message||"ลงทะเบียนไม่สำเร็จ");return;}
+  say("ลงทะเบียนสำเร็จ กรุณาเข้าสู่ระบบ");
+  $("loginNumber").value=$("enrollNumber").value.trim();
+  $("loginForm").classList.remove("hide");$("enrollForm").classList.add("hide");
+};
+
+$("loginForm").onsubmit=async ev=>{
+  ev.preventDefault(); say("กำลังเข้าสู่ระบบ…");
+  const email=syntheticEmail($("loginNumber").value);
+  const {error}=await db.auth.signInWithPassword({email,password:$("loginPassword").value});
+  if(error){say("เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล");return;}
+  say(""); await startChat();
+};
+
+$("logout").onclick=async()=>{
+  if(channel) await db.removeChannel(channel);
+  channel=null; sessionId=null; studentId=null;
+  await db.auth.signOut(); $("chat").classList.add("hide");$("auth").classList.remove("hide");
+};
+
+async function startChat(){
+  const {data:{user}}=await db.auth.getUser();
+  if(!user) return;
+  const {data:account,error:aerr}=await db.from("student_accounts").select("student_id").eq("user_id",user.id).single();
+  if(aerr||!account){say("ไม่พบการเชื่อมบัญชีนักเรียน กรุณาติดต่อโรงเรียน");await db.auth.signOut();return;}
+  studentId=account.student_id;
+  // Try latest active session; create one only if none exists.
+  let {data:sessions,error}=await db.from("chat_sessions").select("id,status").eq("student_id",studentId).neq("status","closed").order("created_at",{ascending:false}).limit(1);
+  if(error){say("โหลดห้องแชทไม่สำเร็จ");return;}
+  if(!sessions?.length){
+    const created=await db.from("chat_sessions").insert({student_id:studentId,status:"bot"}).select("id,status").single();
+    if(created.error){say("สร้างห้องแชทไม่สำเร็จ");return;}
+    sessions=[created.data];
+  }
+  sessionId=sessions[0].id;
+  $("auth").classList.add("hide");$("chat").classList.remove("hide");
+  $("status").textContent="สถานะ: "+sessions[0].status;
+  await loadMessages();
+  if(channel) await db.removeChannel(channel);
+  channel=db.channel("chat-"+sessionId)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages",filter:"session_id=eq."+sessionId},payload=>{
+      addMessage(payload.new);
+    })
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"chat_sessions",filter:"id=eq."+sessionId},payload=>{
+      $("status").textContent="สถานะ: "+payload.new.status;
+    }).subscribe();
+}
+function addMessage(m){
+  if(document.querySelector(`[data-msg="${m.id}"]`)) return;
+  const div=document.createElement("div");div.className="msg"+(m.sender_type==="student"?" mine":"");div.dataset.msg=m.id;
+  const title=document.createElement("b");title.textContent=m.sender_type==="staff"?"เจ้าหน้าที่":m.sender_type==="bot"?"บอท":m.sender_type==="system"?"ระบบ":"คุณ";
+  const body=document.createElement("div");body.textContent=m.message;div.append(title,body);$("messages").append(div);$("messages").scrollTop=$("messages").scrollHeight;
+}
+async function loadMessages(){
+  $("messages").replaceChildren();
+  const {data,error}=await db.from("chat_messages").select("*").eq("session_id",sessionId).order("created_at");
+  if(error){$("status").textContent="โหลดข้อความไม่สำเร็จ";return;}
+  (data||[]).forEach(addMessage);
+}
+async function sendToDb(text,senderType="student"){
+  const {data:{user}}=await db.auth.getUser();
+  const {error}=await db.from("chat_messages").insert({session_id:sessionId,sender_id:user.id,sender_type:senderType,message:text});
+  if(error) throw error;
+}
+async function botReply(text){
+  const q=text.toLowerCase();
+  let answer="ขออภัย บอทยังตอบคำถามนี้ไม่ได้ กด “คุยกับเจ้าหน้าที่” เพื่อส่งคำขอได้ครับ";
+  if(/ติดต่อเจ้าหน้าที่|คุยกับคน|แอดมิน|เจ้าหน้าที่/.test(q)){
+    const {error}=await db.from("chat_sessions").update({status:"waiting",updated_at:new Date().toISOString()}).eq("id",sessionId);
+    if(error) throw error;
+    answer="รับเรื่องแล้วครับ ส่งคำขอไปยังคิวเจ้าหน้าที่แล้ว กรุณารอสักครู่";
+  }else if(/ค่ากีฬาสี|ราคา|เท่าไร|ยอดเงิน/.test(q)){
+    const {data,error}=await db.from("sp_items").select("name,price").order("sort");
+    if(error) throw error;
+    answer=(data||[]).map(x=>`${x.name}: ${Number(x.price||0).toLocaleString("th-TH")} บาท`).join("\n")||"ยังไม่มีรายการค่ากีฬาสีในระบบ";
+  }else if(/วันปิด|กำหนดชำระ|วันไหน/.test(q)){
+    const {data,error}=await db.from("sp_settings").select("value").eq("key","deadline").maybeSingle();
+    if(error) throw error;
+    answer=data?.value ? "กำหนดปิดรับชำระ: "+new Date(data.value).toLocaleString("th-TH") : "ยังไม่ได้กำหนดวันปิดรับชำระ กรุณาติดต่อเจ้าหน้าที่";
+  }else if(/สถานะ|จ่ายเงิน|ชำระ|สลิป/.test(q)){
+    const {data:items,error}=await db.from("sp_items").select("id,name");
+    if(error) throw error;
+    const {data:status,error:serr}=await db.from("sp_status").select("item_id,status").eq("student_id",studentId);
+    if(serr) throw serr;
+    answer=(items||[]).map(i=>`${i.name}: ${{approved:"ชำระแล้ว",pending:"รอตรวจสอบ"}[(status||[]).find(x=>x.item_id===i.id)?.status]||"ยังไม่มีสถานะยืนยัน"}`).join("\n")||"ยังไม่มีรายการให้ตรวจสอบ";
+  }else if(/สวัสดี|หวัดดี|hello/.test(q)) answer="สวัสดีครับ 😊 เลือกคำถามด่วนด้านบนได้เลย";
+  await sendToDb(answer,"bot");
+}
+async function submitMessage(text){
+  if(!sessionId||!text.trim()) return;
+  const value=text.trim();
+  try{
+    await sendToDb(value,"student");
+    const {data:sess,error}=await db.from("chat_sessions").select("status").eq("id",sessionId).single();
+    if(error) throw error;
+    if(sess.status==="bot") await botReply(value);
+    else if(sess.status==="waiting") {/* human queue; staff will answer */}
+    else if(sess.status==="human") {/* staff-only responses */}
+  }catch(err){$("status").textContent="ส่งข้อความไม่สำเร็จ: "+(err.message||"ลองอีกครั้ง");}
+}
+$("sendForm").onsubmit=ev=>{ev.preventDefault();const input=$("message");const text=input.value;input.value="";submitMessage(text);};
+$("menu").onclick=ev=>{const b=ev.target.closest("button[data-q]");if(b)submitMessage(b.dataset.q);};
+(async()=>{const {data:{session}}=await db.auth.getSession();if(session)await startChat();})();
+</script></body></html>
