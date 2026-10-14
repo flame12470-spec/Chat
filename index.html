@@ -142,7 +142,6 @@ form.send .btn{border-radius:999px;flex:none}
       <div class="pane hide" id="chatBox">
         <div class="bar2"><div><b id="stName"></b> <span class="pill" id="stStatus"></span></div><button class="btn o s" id="lgOut" type="button"></button></div>
         <div class="log" id="privLog"></div>
-        <!-- กล่องประเมินความพึงพอใจเมื่อห้องถูกปิด -->
         <div class="hide" id="closedBox" style="padding:16px;text-align:center;background:#f8fafc;border-top:1px solid var(--line)">
           <p class="meta" id="closedText" style="margin-bottom:8px">ห้องแชทนี้ถูกปิดแล้ว กรุณาประเมินการให้บริการครับ</p>
           <div id="ratingArea" style="display:flex;gap:8px;justify-content:center;margin-bottom:12px">
@@ -207,7 +206,7 @@ const DEF={
  priv_placeholder:'พิมพ์ข้อความถึงเจ้าหน้าที่...',priv_hello:'สวัสดี! พิมพ์ข้อความด้านล่างเพื่อติดต่อเจ้าหน้าที่ได้เลย',
  logout_btn:'ออกจากแชท',closed_text:'ห้องแชทนี้ถูกปิดแล้ว กรุณาประเมินการให้บริการ',new_chat_btn:'เริ่มแชทใหม่',
  status_open:'เปิดอยู่',status_closed:'ปิดแล้ว',
- brand:'#2b6cff',bg:'#eef3fc',me:'#2b6cff',staff:#ffffff,bot:'#e3ecff'
+ brand:'#2b6cff',bg:'#eef3fc',me:'#2b6cff',staff:'#ffffff',bot:'#e3ecff'
 };
 const DEF_FAQ=[
  {q:'ตารางเรียน',k:'ตารางเรียน,ตารางสอน,คาบเรียน',a:'ตารางเรียนประกาศที่บอร์ดหน้าห้องเรียนและทางเว็บไซต์โรงเรียน'},
@@ -245,7 +244,7 @@ function applyText(){
   document.title='แชทโรงเรียน';
   $('tabBot').textContent=C.tab_bot;$('tabPriv').textContent=C.tab_priv;
   $('wTitle').textContent=C.welcome_title;$('wText').textContent=C.welcome_text;
-  $('faqTitle').textContent=C.faq_title;$('botIn'].placeholder=C.bot_placeholder;$('botSend').textContent=C.send_btn;
+  $('faqTitle').textContent=C.faq_title;$('botIn').placeholder=C.bot_placeholder;$('botSend').textContent=C.send_btn;
   $('lgTitle').textContent=C.login_title;$('lgCodeL').textContent=C.code_label;$('lgBtn').textContent=C.login_btn;
   $('privIn').placeholder=C.priv_placeholder;$('privSend').textContent=C.send_btn;$('lgOut').textContent=C.logout_btn;
   $('closedText').textContent=C.closed_text;$('newChat').textContent=C.new_chat_btn;
@@ -256,7 +255,7 @@ async function loadCfg(){
     const r=await db.from(SETTINGS_TABLE).select('*').like('key',KEY_PREFIX.replace('_','\\_')+'%');
     if(!r.error)(r.data||[]).forEach(x=>{
       const k=x.key.slice(KEY_PREFIX.length);
-      if(k==='faq'){try{const a=JSON.parse(x.value);if(Array.isArray(a))FAQ=a;}catch(_}{}}
+      if(k==='faq'){try{const a=JSON.parse(x.value);if(Array.isArray(a))FAQ=a;}catch(_){}}
       else if(k in DEF&&x.value!=null&&String(x.value).trim()!=='')C[k]=x.value;
     });
   }catch(_){}
@@ -329,7 +328,7 @@ async function askBot(text){
   addBotMsg('bot',a||C.fallback);
   botBusy=false;
 }
-$('botForm').onsubmit=ev=>{ev.preventDefault();const v=$('botIn'].value;$('botIn'].value='';askBot(v);};
+$('botForm').onsubmit=ev=>{ev.preventDefault();const v=$('botIn').value;$('botIn').value='';askBot(v);};
 
 function userTab(t){
   $('tabBot').classList.toggle('on',t==='bot');$('tabPriv').classList.toggle('on',t==='priv');
@@ -423,13 +422,13 @@ async function rateSession(score){
 }
 $('privIn').addEventListener('input',pingTyping);$('privForm').onsubmit=async ev=>{
   ev.preventDefault();
-  const text=$('privIn'].value.trim();if(!text||!SESSION)return;
+  const text=$('privIn').value.trim();if(!text||!SESSION)return;
   const {data}=await db.auth.getSession();
   $('privSend').disabled=true;
   const r=await db.from('chat_messages').insert({session_id:SESSION.id,sender_id:data.session.user.id,sender_role:'student',message:text});
   $('privSend').disabled=false;
   if(r.error)return toast('ส่งไม่สำเร็จ',true);
-  $('privIn'].value='';
+  $('privIn').value='';
   await loadPrivMsgs();
 };
 $('newChat').onclick=()=>openSession(true);$('lgOut').onclick=async()=>{
@@ -546,10 +545,10 @@ async function loadAdminMsgs(){
 }
 async function sendAdmin(ev){
   ev.preventDefault();
-  const text=$('admIn'].value.trim();if(!text||!SEL)return;
+  const text=$('admIn').value.trim();if(!text||!SEL)return;
   const {data}=await db.auth.getSession();
   await db.from('chat_messages').insert({session_id:SEL.id,sender_id:data.session.user.id,sender_role:'admin',message:text});
-  $('admIn'].value='';loadAdminMsgs();loadRooms();
+  $('admIn').value='';loadAdminMsgs();loadRooms();
 }
 function subscribeAdmin(){
   if(chAdmin)db.removeChannel(chAdmin);
@@ -572,16 +571,45 @@ function renderEdit(){
   $('editPane').innerHTML=`
   <div class="card panel"><h2>สีของเว็บไซต์</h2><div class="swatches">${COLOR_FIELDS.map(([k,l])=>`<label><input type="color" id="c_${k}" value="${esc(C[k])}">${esc(l)}</label>`).join('')}</div></div>
   <div class="card panel"><h2>ข้อความทุกส่วน</h2><div class="grid2">${TEXT_FIELDS.map(inp).join('')}</div></div>
+  <div class="card panel"><h2>เพิ่ม/แก้ไข คำถามบอท (เพิ่มรวดเดียวได้)</h2>
+    <p class="meta" style="margin:0 0 10px">รูปแบบ (บรรทัดละข้อ): <b>คำถาม | คำสำคัญ(คั่นด้วยคอมมา) | คำตอบ</b></p>
+    <textarea id="bulkFaq" style="min-height:90px" placeholder="ตารางเรียน | ตารางเรียน,คาบเรียน | ตารางเรียนดูที่บอร์ด"></textarea>
+    <button class="btn o s" id="bulkFaqAdd" type="button" style="margin:8px 0 14px">+ เพิ่มจากช่องด้านบน</button>
+    <div id="faqList"></div><button class="btn o s" id="faqAdd" type="button">+ เพิ่มทีละข้อ</button></div>
   <div style="display:flex;gap:8px"><button class="btn" id="saveAll" type="button">บันทึกทั้งหมด</button></div>`;
-  COLOR_FIELDS.forEach(([k])=>$('c_'+k).oninput=ev=>{C[k]=ev.target.value;applyTheme();});$('saveAll').onclick=async()=>{
+  COLOR_FIELDS.forEach(([k])=>$('c_'+k).oninput=ev=>{C[k]=ev.target.value;applyTheme();});
+  drawFaq();
+  $('faqAdd').onclick=()=>{readFaq();FAQ.push({q:'',k:'',a:''});drawFaq();};$('bulkFaqAdd').onclick=()=>{
+    const lines=$('bulkFaq').value.split('\n');
+    readFaq();
+    lines.forEach(l=>{
+      const parts=l.split('|').map(s=>s.trim());
+      if(parts.length>=3) FAQ.push({q:parts[0], k:parts[1], a:parts[2]});
+    });
+    $('bulkFaq').value='';
+    drawFaq();
+    toast('เพิ่มคำถามเรียบร้อยแล้ว');
+  };
+  drawFaq();
+  $('saveAll').onclick=async()=>{
+    readFaq();
     const vals={};
     TEXT_FIELDS.forEach(([k])=>vals[k]=$('t_'+k).value.trim());
     COLOR_FIELDS.forEach(([k])=>vals[k]=$('c_'+k).value);
-    const rows=Object.entries(vals).map(([k,value])=>({key:KEY_PREFIX+k,value,updated_at:new Date().toISOString()}));
+    const faq=FAQ.filter(f=>f.q.trim()||f.a.trim()).map(f=>({q:f.q.trim(),k:f.k.trim(),a:f.a.trim()}));
+    const now=new Date().toISOString();
+    const rows=Object.entries(vals).map(([k,value])=>({key:KEY_PREFIX+k,value,updated_at:now}));
+    rows.push({key:KEY_PREFIX+'faq',value:JSON.stringify(faq),updated_at:now});
     await db.from(SETTINGS_TABLE).upsert(rows);
-    C={...DEF};await loadCfg();toast('บันทึกเรียบร้อยแล้ว');
+    C={...DEF};FAQ=JSON.parse(JSON.stringify(DEF_FAQ));await loadCfg();renderEdit();
+    toast('บันทึกเรียบร้อยแล้ว');
   };
 }
+function drawFaq(){
+  $('faqList').innerHTML=FAQ.map((f,i)=>`<div class="faqrow"><input data-f="q" data-i="${i}" placeholder="คำถาม" value="${esc(f.q)}"><input data-f="k" data-i="${i}" placeholder="คำสำคัญ (คั่นด้วย ,)" value="${esc(f.k)}"><textarea data-f="a" data-i="${i}" placeholder="คำตอบ">${esc(f.a)}</textarea><button class="btn o s" type="button" data-rm="${i}">ลบ</button></div>`).join('');
+  $('faqList').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{readFaq();FAQ.splice(+b.dataset.rm,1);drawFaq();});
+}
+function readFaq(){document.querySelectorAll('#faqList [data-f]').forEach(el=>{FAQ[+el.dataset.i][el.dataset.f]=el.value;});}
 
 applyText();loadCfg();
 </script>
