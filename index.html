@@ -564,6 +564,16 @@ function renderStudents(){
       <span class="meta" id="bulkInfo"></span>
     </div>
     <p class="meta" style="margin:10px 0 0">ไฟล์ CSV ต้องบันทึกเป็น UTF-8 ไม่งั้นชื่อภาษาไทยจะเพี้ยน</p></div>
+  <div class="card panel"><h2>ดึงรายชื่อจากระบบเดิม (sp_students)</h2>
+    <p class="meta" style="margin:0 0 12px">ดึงชื่อ เลขที่ ห้อง ที่มีอยู่แล้วมาแสดง แล้วใส่เฉพาะรหัสนักเรียน 5 หลักของแต่ละคน ไม่ต้องพิมพ์ชื่อใหม่ รายชื่อที่มีรหัสในแชทอยู่แล้วจะแสดงรหัสให้</p>
+    <button class="btn" id="spLoad" type="button">โหลดรายชื่อจากระบบเดิม</button>
+    <div id="spBox" class="hide" style="margin-top:14px">
+      <label class="lbl" for="spPaste" style="margin-top:0">วางรหัสเป็นกลุ่ม (ไม่บังคับ)</label>
+      <textarea id="spPaste" style="min-height:90px" placeholder="ม.1/1, 1, 12345&#10;หรือ&#10;สมชาย ใจดี, 12345"></textarea>
+      <p class="meta" style="margin:6px 0 10px">แต่ละบรรทัดเป็น <b>ห้อง, เลขที่, รหัส</b> หรือ <b>ชื่อเต็ม, รหัส</b> (ชื่อต้องตรงกับในระบบเดิม) กด "เติมรหัส" แล้วตรวจในรายการด้านล่างก่อนบันทึก</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><button class="btn o" id="spFill" type="button">เติมรหัส</button><button class="btn" id="spSave" type="button">บันทึกรหัสที่กรอก</button><span class="meta" id="spInfo" style="align-self:center"></span></div>
+      <div id="spList"></div>
+    </div></div>
   <div class="card panel"><h2>เพิ่มทีละคน</h2>
     <div class="grid2" style="margin-top:10px">
       <div><label class="lbl" for="n_code" style="margin-top:0">รหัสนักเรียน (5 หลัก)</label><input id="n_code" inputmode="numeric" maxlength="5"></div>
@@ -601,7 +611,59 @@ function renderStudents(){
       ['n_code','n_name','n_no','n_cls'].forEach(i=>$(i).value='');toast('เพิ่มแล้ว');loadStudents();
     }catch(err){toast('บันทึกไม่สำเร็จ: '+err.message,true);}
   };
+  $('spLoad').onclick=loadSp;
+  $('spFill').onclick=fillSp;
+  $('spSave').onclick=saveSp;
   loadStudents();
+}
+/* ---------- ดึงรายชื่อจาก sp_students แล้วใส่เฉพาะรหัส ---------- */
+let SPS=[];
+const spKey=(n,c,no)=>`${String(n||'').trim()}|${String(c||'').trim()}|${no??''}`;
+async function loadSp(){
+  const b=$('spLoad');b.disabled=true;b.textContent='กำลังโหลด...';
+  const r=await db.from('sp_students').select('*').order('class_name').order('number',{nullsFirst:false}).limit(5000);
+  b.disabled=false;b.textContent='โหลดรายชื่อจากระบบเดิมอีกครั้ง';
+  if(r.error)return toast('โหลดไม่สำเร็จ: '+r.error.message,true);
+  SPS=r.data||[];$('spBox').classList.remove('hide');drawSp();
+}
+function drawSp(){
+  const have=new Map(STU.map(s=>[spKey(s.student_name,s.class_name,s.student_no),s.student_code]));
+  $('spList').innerHTML=SPS.map((s,i)=>`<div style="display:flex;gap:10px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line)"><span style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(s.name)}<br><span class="meta">เลขที่ ${esc(s.number??'-')} · ${esc(s.class_name||'-')}</span></span><input data-sp="${i}" inputmode="numeric" maxlength="5" placeholder="รหัส 5 หลัก" aria-label="รหัสของ ${esc(s.name)}" value="${esc(have.get(spKey(s.name,s.class_name,s.number))||'')}" style="width:110px"></div>`).join('')||'<div class="meta">ไม่พบรายชื่อใน sp_students</div>';
+  $('spList').querySelectorAll('input').forEach(el=>el.oninput=()=>{el.value=el.value.replace(/\D/g,'').slice(0,5);});
+  $('spInfo').textContent=`${SPS.length} คน`;
+}
+function fillSp(){
+  let ok=0,miss=0;
+  const inputs=[...$('spList').querySelectorAll('input')];
+  $('spPaste').value.split(/\r?\n/).forEach(line=>{
+    if(!line.trim())return;
+    const c=line.split(/\t|,/).map(s=>s.trim().replace(/^"|"$/g,''));
+    const code=c[c.length-1];
+    if(!/^\d{5}$/.test(code)){miss++;return;}
+    const i=c.length>=3?SPS.findIndex(s=>String(s.class_name||'').trim()===c[0]&&String(s.number??'')===c[1])
+                       :SPS.findIndex(s=>String(s.name||'').trim()===c[0]);
+    if(i<0){miss++;return;}
+    inputs[i].value=code;ok++;
+  });
+  $('spInfo').textContent=`เติมแล้ว ${ok} คน`+(miss?` · ไม่พบ/ผิดรูปแบบ ${miss} บรรทัด`:'');
+}
+async function saveSp(){
+  const rows=[],seen=new Set();let bad=0;
+  $('spList').querySelectorAll('input').forEach(el=>{
+    const v=el.value.trim();if(!v)return;
+    const s=SPS[+el.dataset.sp];
+    if(!/^\d{5}$/.test(v)||seen.has(v)){bad++;return;}
+    seen.add(v);
+    const no=parseInt(s.number,10);
+    rows.push({student_code:v,student_name:String(s.name||'').trim(),student_no:Number.isNaN(no)?null:no,class_name:s.class_name||null});
+  });
+  if(bad)return toast(`มีรหัสที่ไม่ครบ 5 หลักหรือซ้ำกัน ${bad} ช่อง กรุณาแก้ก่อนบันทึก`,true);
+  if(!rows.length)return toast('ยังไม่ได้กรอกรหัสนักเรียน',true);
+  if(!confirm(`บันทึกรหัสนักเรียน ${rows.length} คน?`))return;
+  const b=$('spSave');b.disabled=true;
+  try{await saveStudents(rows);toast(`บันทึก ${rows.length} คนแล้ว`);await loadStudents();drawSp();}
+  catch(err){toast('บันทึกไม่สำเร็จ: '+err.message,true);}
+  finally{b.disabled=false;}
 }
 async function loadStudents(){
   const r=await db.from('chat_students').select('*').order('class_name',{nullsFirst:false}).order('student_no',{nullsFirst:false}).limit(5000);
