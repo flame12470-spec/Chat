@@ -1,569 +1,171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>แชทโรงเรียน</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แชทช่วยเหลือนักเรียน</title>
 <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--brand:#2b6cff;--bg:#eef3fc;--me:#2b6cff;--staff:#ffffff;--bot:#e3ecff;--surface:#fff;--ink:#0c1324;--mute:#69758c;--line:#e5e9f2;--coral:#ff5d73;--mint:#0fb27a;--soft:color-mix(in srgb,var(--brand) 10%,#fff);--sh:0 1px 2px rgba(12,19,36,.05),0 12px 32px -10px rgba(12,19,36,.14)}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;font:400 15px/1.6 Anuphan,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;overflow:hidden}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
-:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
-[hidden],.hide{display:none!important}
-
-/* ---------- แถบเมนูแบบแคปซูล ---------- */
-header{flex:none;z-index:30;padding:max(12px,env(safe-area-inset-top)) 12px 0}
-.bar{max-width:1040px;margin:auto;padding:8px 10px 8px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:rgba(255,255,255,.88);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:999px;box-shadow:var(--sh)}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;min-width:0}
-.logo span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mark{flex:none;width:36px;height:36px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:19px}
-nav{display:flex;gap:2px;align-items:center;flex-wrap:wrap}
-nav button{background:none;border:0;padding:8px 15px;border-radius:999px;font-weight:500;color:var(--mute);transition:background .15s}
-nav button:hover{background:var(--soft);color:var(--brand)}
-nav button.on{background:var(--ink);color:#fff}
-nav .gear{width:36px;height:36px;padding:0;font-size:16px;margin-left:2px;opacity:.7}
-nav .gear:hover{opacity:1}
-
-main{flex:1;min-height:0;width:100%;max-width:760px;margin:auto;padding:14px 12px max(14px,env(safe-area-inset-bottom));display:flex;flex-direction:column}
-main.wide{max-width:1040px}
-.pane{flex:1;min-height:0;display:flex;flex-direction:column}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--sh)}
-.chat{overflow:hidden}
-
-/* ---------- ฮีโร่ต้อนรับ ---------- */
-.hero{position:relative;overflow:hidden;background:var(--brand);color:#fff;border-radius:22px;padding:22px 22px;margin-bottom:6px;box-shadow:0 22px 44px -24px color-mix(in srgb,var(--brand) 80%,transparent);flex:none}
-.hero::before{content:"";position:absolute;right:-130px;top:-150px;width:400px;height:400px;border-radius:50%;background:repeating-radial-gradient(circle,transparent 0 24px,rgba(255,255,255,.09) 24px 26px);pointer-events:none}
-.hero>*{position:relative}
-.hero h2{margin:0 0 4px;font-size:clamp(19px,4.5vw,24px);font-weight:700;line-height:1.25}
-.hero p{margin:0;color:rgba(255,255,255,.85);font-size:14px}
-
-/* ---------- แชท ---------- */
-.log{flex:1;min-height:0;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-.msg{max-width:82%;padding:10px 14px;border-radius:20px;overflow-wrap:anywhere}
-.msg .t{white-space:pre-wrap}
-.msg small{display:block;font-size:11px;opacity:.7;margin-top:3px}
-.msg.me{align-self:flex-end;background:var(--me);color:#fff;border-bottom-right-radius:6px}
-.msg.me small{text-align:right}
-.msg.staff{align-self:flex-start;background:var(--staff);border:1px solid var(--line);border-bottom-left-radius:6px}
-.msg.bot{align-self:flex-start;background:var(--bot);border-bottom-left-radius:6px}
-.msg.typing{display:flex;gap:5px;align-items:center;padding:14px 16px}
-.msg.typing i{width:8px;height:8px;border-radius:50%;background:var(--mute);opacity:.45;animation:bounce 1.1s infinite}
-.msg.typing i:nth-child(2){animation-delay:.16s}
-.msg.typing i:nth-child(3){animation-delay:.32s}
-@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-5px);opacity:1}}
-.msg.in{animation:pop .22s}
-@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.97)}}
-.chiptitle{padding:0 16px 6px;font-size:12.5px;color:var(--mute);font-weight:600}
-.chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 16px 12px}
-.chip{border:1.5px solid var(--brand);background:#fff;color:var(--brand);border-radius:999px;padding:7px 15px;font-weight:600;font-size:14px;transition:background .15s}
-.chip:hover{background:var(--soft)}
-form.send{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff}
-input,select,textarea{width:100%;padding:12px 14px;border:1.5px solid transparent;border-radius:14px;background:#e9edf6;transition:background .15s,border-color .15s,box-shadow .15s}
-input:focus,select:focus,textarea:focus{outline:0;background:#fff;border-color:var(--brand);box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 14%,transparent)}
-textarea{min-height:90px;resize:vertical}
-form.send input{border-radius:999px}
-.btn{border:0;border-radius:13px;padding:11px 20px;font-weight:600;background:var(--brand);color:#fff;transition:transform .15s,box-shadow .15s}
-.btn:hover{transform:translateY(-1px);box-shadow:0 10px 20px -10px color-mix(in srgb,var(--brand) 70%,transparent)}
-.btn.o{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none}
-.btn.r{background:var(--coral)}
-.btn.s{padding:7px 14px;font-size:13px;border-radius:11px}
-.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
-form.send .btn{border-radius:999px;flex:none}
-
-/* ---------- ยืนยันตัวตน ---------- */
-.center{flex:1;display:grid;place-items:center;padding:16px;overflow:auto}
-.box{width:min(400px,100%);padding:26px}
-.box h2{margin:0 0 4px;font-size:20px;font-weight:700}
-.box p.sub{margin:0 0 16px;color:var(--mute);font-size:14px}
-.lbl{display:block;font-weight:600;font-size:14px;margin:12px 0 7px}
-.err{color:var(--coral);margin:10px 0 0;min-height:1.2em;font-size:14px}
-.bar2{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.pill{font-size:12px;font-weight:600;padding:2px 10px;border-radius:99px;background:#d9f6ea;color:#07805a;white-space:nowrap}
-.pill.c{background:#eceff5;color:var(--mute)}
-
-/* ---------- แอดมิน ---------- */
-.adm{flex:1;min-height:0;display:grid;grid-template-columns:300px 1fr;gap:12px}
-.rooms{overflow-y:auto;padding:8px}
-.room{width:100%;text-align:left;border:0;background:none;padding:10px 12px;border-radius:16px;display:block}
-.room:hover{background:var(--soft)}
-.room.on{background:var(--soft);outline:2px solid var(--brand)}
-.room b{display:flex;gap:6px;align-items:center}
-.dot{width:9px;height:9px;border-radius:50%;background:var(--coral);flex:none}
-.meta{font-size:12.5px;color:var(--mute)}
-.scroll{flex:1;min-height:0;overflow-y:auto;padding:2px 2px 30px}
-.panel{padding:24px;margin-bottom:16px}
-.panel h2{margin:0 0 4px;font-size:20px;font-weight:700}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.faqrow{display:grid;gap:8px;padding:14px;border:1px solid var(--line);border-radius:18px;margin-bottom:10px}
-.swatches{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:12px}
-.swatches label{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px}
-.swatches input[type=color]{width:46px;height:42px;padding:2px;border-radius:12px;flex:none}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:999px;z-index:99;max-width:90vw;box-shadow:0 12px 30px rgba(12,19,36,.3)}
-.toast.bad{background:var(--coral)}
-.bg{position:fixed;inset:0;z-index:50;background:rgba(12,19,36,.45);backdrop-filter:blur(4px);display:grid;place-items:center;padding:16px}
-@media(max-width:720px){.adm{grid-template-columns:1fr}.adm.chatopen .rooms{display:none}.adm:not(.chatopen) .chatcol{display:none}.msg{max-width:90%}.bar{border-radius:26px}nav button{padding:8px 11px}.logo span.t{max-width:42vw}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-</style>
-</head>
-<body>
-<header><div class="bar">
-  <div class="logo"><span class="mark" id="hLogo">🏫</span><span class="t" id="hTitle"></span></div>
-  <nav id="navUser">
-    <button id="tabBot" class="on" type="button"></button>
-    <button id="tabPriv" type="button"></button>
-    <button class="gear" id="adminBtn" type="button" title="ผู้ดูแล" aria-label="ผู้ดูแล">⚙</button>
-  </nav>
-  <nav id="navAdmin" class="hide">
-    <button id="aTabChat" class="on" type="button">ห้องแชท</button>
-    <button id="aTabEdit" type="button">แก้ไขหน้าเว็บ</button>
-    <button id="aBack" type="button">← หน้าแรก</button>
-    <button id="aOut" type="button">ออกจากระบบ</button>
-  </nav>
-</div></header>
-
-<main id="main">
-  <!-- ผู้ใช้ทั่วไป -->
-  <section class="pane" id="userView">
-    <!-- ถามบอท -->
-    <div class="card chat pane" id="botPane">
-      <div class="log" id="botLog">
-        <div class="hero" id="hero"><h2 id="wTitle"></h2><p id="wText"></p></div>
-      </div>
-      <div class="chiptitle" id="faqTitle"></div>
-      <div class="chips" id="chips"></div>
-      <form class="send" id="botForm" autocomplete="off"><input id="botIn" maxlength="300" aria-label="ข้อความ"><button class="btn" id="botSend"></button></form>
-    </div>
-
-    <!-- คุยกับเจ้าหน้าที่ -->
-    <div class="card chat pane hide" id="privPane">
-      <div class="center" id="loginBox">
-        <form class="box" id="loginForm" autocomplete="off">
-          <h2 id="lgTitle"></h2><p class="sub" id="lgText"></p>
-          <label class="lbl" for="code" id="lgCodeL"></label>
-          <input id="code" inputmode="numeric" pattern="\d{5}" maxlength="5" required autocomplete="off">
-          <button class="btn" id="lgBtn" style="width:100%;margin-top:16px"></button>
-          <p class="err" id="lgErr"></p>
-        </form>
-      </div>
-      <div class="pane hide" id="chatBox">
-        <div class="bar2"><div><b id="stName"></b> <span class="pill" id="stStatus"></span></div><button class="btn o s" id="lgOut" type="button"></button></div>
-        <div class="log" id="privLog"></div>
-        <div class="hide" id="closedBox" style="padding:14px;text-align:center"><p class="meta" id="closedText"></p><button class="btn" id="newChat" type="button"></button></div>
-        <form class="send" id="privForm" autocomplete="off"><input id="privIn" maxlength="1000" aria-label="ข้อความ"><button class="btn" id="privSend"></button></form>
-      </div>
-    </div>
-  </section>
-
-  <!-- แอดมิน -->
-  <section class="pane hide" id="adminView">
-    <div class="adm" id="admGrid">
-      <div class="card rooms" id="rooms"></div>
-      <div class="card chat pane chatcol" id="admChat"></div>
-    </div>
-    <div class="scroll hide" id="editPane"></div>
-  </section>
-</main>
-
-<!-- หน้าต่างล็อกอินแอดมิน -->
-<div class="bg hide" id="admLogin">
-  <form class="card box" id="admForm">
-    <h2>เข้าสู่ระบบผู้ดูแล</h2><p class="sub">สำหรับเจ้าหน้าที่เท่านั้น</p>
-    <label class="lbl" for="aem">อีเมล</label><input id="aem" type="email" required autocomplete="username">
-    <label class="lbl" for="apw">รหัสผ่าน</label><input id="apw" type="password" required autocomplete="current-password">
-    <div style="display:flex;gap:8px;margin-top:16px"><button class="btn o" type="button" id="aCancel" style="flex:1">ยกเลิก</button><button class="btn" id="aGo" style="flex:1">เข้าสู่ระบบ</button></div>
-    <p class="err" id="aErr"></p>
-  </form>
+*{box-sizing:border-box}body{margin:0;background:#f3f5fa;color:#111827;font:15px Anuphan,sans-serif}
+main{max-width:760px;margin:24px auto;padding:16px}.card{background:#fff;border:1px solid #e1e6ef;border-radius:22px;padding:22px;margin-bottom:16px}
+h1,h2{margin:0 0 8px}.muted{color:#667085;font-size:13px}.row{display:flex;gap:8px;flex-wrap:wrap}
+input,button{font:inherit;border-radius:12px;padding:11px 13px}input{width:100%;border:1px solid #d7deea;margin:6px 0 12px}
+button{border:0;background:#2b50ff;color:white;cursor:pointer}.soft{background:#edf1ff;color:#2443c7}.wide{width:100%}
+#messages{height:360px;overflow:auto;background:#f5f7fb;border-radius:16px;padding:12px;margin:14px 0}
+.msg{white-space:pre-wrap;padding:10px 12px;border-radius:14px;background:white;margin:8px 0;max-width:90%}.mine{margin-left:auto;background:#dfe7ff}
+#status{font-size:13px;color:#667085}.hide{display:none!important}
+</style></head>
+<body><main>
+<section id="auth" class="card">
+<h1>🎓 เข้าสู่ระบบนักเรียน</h1>
+<p class="muted">ลงทะเบียนครั้งแรกต้องใช้เลขประจำตัวและรหัสลงทะเบียนครั้งเดียวที่โรงเรียนออกให้</p>
+<div class="row"><button id="loginTab" class="soft">เข้าสู่ระบบ</button><button id="enrollTab" class="soft">ลงทะเบียนครั้งแรก</button></div>
+<form id="loginForm">
+<label>เลขประจำตัวนักเรียน</label><input id="loginNumber" autocomplete="username" required>
+<label>รหัสผ่าน</label><input id="loginPassword" type="password" autocomplete="current-password" required>
+<button class="wide">เข้าสู่ระบบ</button></form>
+<form id="enrollForm" class="hide">
+<label>เลขประจำตัวนักเรียน</label><input id="enrollNumber" required>
+<label>รหัสลงทะเบียนครั้งเดียวจากโรงเรียน</label><input id="enrollCode" autocomplete="one-time-code" required>
+<label>ตั้งรหัสผ่าน (อย่างน้อย 10 ตัวอักษร)</label><input id="enrollPassword" type="password" minlength="10" required>
+<button class="wide">ลงทะเบียน</button></form>
+<p id="authMsg" role="status"></p>
+</section>
+<section id="chat" class="card hide">
+<div class="row" style="justify-content:space-between;align-items:center"><h2>💬 ศูนย์ช่วยเหลือนักเรียน</h2><button id="logout" class="soft">ออกจากระบบ</button></div>
+<div id="status">กำลังเชื่อมต่อ…</div>
+<div class="row" id="menu">
+<button class="soft" data-q="ค่ากีฬาสีเท่าไร">💰 ค่ากีฬาสี</button>
+<button class="soft" data-q="ตรวจสอบสถานะการจ่ายเงิน">🧾 สถานะชำระ</button>
+<button class="soft" data-q="วันปิดรับชำระวันไหน">📅 กำหนดชำระ</button>
+<button class="soft" data-q="ขอติดต่อเจ้าหน้าที่">🧑‍💼 เจ้าหน้าที่</button>
 </div>
-
+<div id="messages" aria-live="polite"></div>
+<form id="sendForm" class="row"><input id="message" maxlength="4000" placeholder="พิมพ์ข้อความ…" required style="flex:1;min-width:180px"><button>ส่ง</button></form>
+</section></main>
 <script>
-/* ============ ตั้งค่าการเชื่อมต่อ ============ */
-const SB_URL='https://aefzegkgfwszuiznihsk.supabase.co';
-const SB_KEY='sb_publishable_Z1zogpI9qqUlegxG816ncQ_eHeaiFvr';   // publishable key เท่านั้น ห้ามใส่ service_role
-const SETTINGS_TABLE='sp_settings', KEY_PREFIX='chat_';
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+let sessionId = null, channel = null, studentId = null, studentName = "";
+function say(text){ $("authMsg").textContent=text; }
+function syntheticEmail(n){
+  const local=btoa(n.trim().toLowerCase()).replace(/=+$/g,"").replace(/\+/g,"-").replace(/\//g,"_");
+  return `student-${local}@students.invalid`;
+}
+$("loginTab").onclick=()=>{$("loginForm").classList.remove("hide");$("enrollForm").classList.add("hide");say("");};
+$("enrollTab").onclick=()=>{$("enrollForm").classList.remove("hide");$("loginForm").classList.add("hide");say("");};
 
-/* ============ ข้อความและสีทั้งหมด (แก้ได้ในแท็บ "แก้ไขหน้าเว็บ") ============ */
-const TEXT_FIELDS=[
- ['site_name','ชื่อระบบ (หัวเว็บ)'],['logo','ไอคอนโลโก้ (อีโมจิ)'],
- ['tab_bot','ชื่อเมนู: ถามบอท'],['tab_priv','ชื่อเมนู: คุยกับเจ้าหน้าที่'],
- ['welcome_title','ข้อความต้อนรับ: หัวข้อ'],['welcome_text','ข้อความต้อนรับ: รายละเอียด'],
- ['faq_title','หัวข้อปุ่มคำถามด่วน'],['bot_placeholder','ข้อความจางช่องพิมพ์ (บอท)'],['send_btn','ปุ่มส่ง'],
- ['fallback','บอทตอบเมื่อไม่เข้าใจ'],
- ['login_title','หน้ายืนยันตัวตน: หัวข้อ'],['login_text','หน้ายืนยันตัวตน: คำอธิบาย'],
- ['code_label','ป้ายช่องรหัสนักเรียน'],['login_btn','ปุ่มยืนยันตัวตน'],
- ['login_err','ข้อความเมื่อยืนยันไม่ผ่าน'],['locked_err','ข้อความเมื่อลองผิดหลายครั้ง'],
- ['priv_placeholder','ข้อความจางช่องพิมพ์ (แชทส่วนตัว)'],['priv_hello','ข้อความแรกในแชทส่วนตัว'],
- ['logout_btn','ปุ่มออกจากแชท'],['closed_text','ข้อความเมื่อห้องถูกปิด'],['new_chat_btn','ปุ่มเริ่มแชทใหม่'],
- ['status_open','ป้ายสถานะ: เปิดอยู่'],['status_closed','ป้ายสถานะ: ปิดแล้ว'],
-];
-const COLOR_FIELDS=[['brand','สีหลัก (ปุ่ม/การ์ดต้อนรับ)'],['bg','สีพื้นหลังเว็บ'],['me','สีข้อความของฉัน'],['staff','สีข้อความเจ้าหน้าที่'],['bot','สีข้อความบอท']];
-const DEF={
- site_name:'แชทโรงเรียน',logo:'🏫',
- tab_bot:'ถามบอท',tab_priv:'คุยกับเจ้าหน้าที่',
- welcome_title:'สวัสดี ยินดีต้อนรับ 👋',welcome_text:'เลือกคำถามด้านล่าง หรือพิมพ์ถามบอทได้เลย หากต้องการคุยส่วนตัวกับเจ้าหน้าที่ ให้กดเมนู "คุยกับเจ้าหน้าที่" ด้านบน',
- faq_title:'คำถามที่พบบ่อย',bot_placeholder:'พิมพ์คำถามของคุณ...',send_btn:'ส่ง',
- fallback:'ขออภัย บอทยังไม่เข้าใจคำถามนี้ ลองเลือกจากปุ่มคำถามด่วน หรือกดเมนู "คุยกับเจ้าหน้าที่" เพื่อสอบถามเจ้าหน้าที่โดยตรง',
- login_title:'ยืนยันตัวตนนักเรียน',login_text:'กรอกรหัสนักเรียน 5 หลักเพื่อคุยกับเจ้าหน้าที่',
- code_label:'รหัสนักเรียน (ตัวเลข 5 หลัก)',login_btn:'ยืนยันตัวตน',
- login_err:'ไม่สามารถยืนยันตัวตนได้ กรุณาตรวจสอบรหัสนักเรียน',locked_err:'ลองผิดหลายครั้งเกินไป กรุณารอสักครู่แล้วลองใหม่',
- priv_placeholder:'พิมพ์ข้อความถึงเจ้าหน้าที่...',priv_hello:'สวัสดี! พิมพ์ข้อความด้านล่างเพื่อติดต่อเจ้าหน้าที่ได้เลย',
- logout_btn:'ออกจากแชท',closed_text:'ห้องแชทนี้ถูกปิดแล้ว หากต้องการสอบถามเพิ่มเติมสามารถเริ่มแชทใหม่ได้',new_chat_btn:'เริ่มแชทใหม่',
- status_open:'เปิดอยู่',status_closed:'ปิดแล้ว',
- brand:'#2b6cff',bg:'#eef3fc',me:'#2b6cff',staff:'#ffffff',bot:'#e3ecff'
+$("enrollForm").onsubmit=async ev=>{
+  ev.preventDefault(); say("กำลังลงทะเบียน…");
+  const {data,error}=await db.functions.invoke("student-enroll",{body:{
+    studentNumber:$("enrollNumber").value.trim(),
+    code:$("enrollCode").value.trim(),
+    password:$("enrollPassword").value
+  }});
+  if(error||data?.error){say(data?.error||error.message||"ลงทะเบียนไม่สำเร็จ");return;}
+  say("ลงทะเบียนสำเร็จ กรุณาเข้าสู่ระบบ");
+  $("loginNumber").value=$("enrollNumber").value.trim();
+  $("loginForm").classList.remove("hide");$("enrollForm").classList.add("hide");
 };
-const DEF_FAQ=[
- {q:'ตารางเรียน',k:'ตารางเรียน,ตารางสอน,คาบเรียน',a:'ตารางเรียนประกาศที่บอร์ดหน้าห้องเรียนและทางเว็บไซต์โรงเรียน (แก้ข้อความนี้ได้ในโหมดผู้ดูแล)'},
- {q:'การชำระเงิน',k:'ชำระเงิน,จ่ายเงิน,ค่าเทอม,ค่าเล่าเรียน',a:'ชำระค่าเทอมได้ที่ห้องการเงิน หรือโอนผ่านบัญชีโรงเรียน (แก้ข้อความนี้ได้ในโหมดผู้ดูแล)'},
- {q:'เวลาเปิดทำการ',k:'เวลาเปิด,เวลาทำการ,เปิดกี่โมง,ปิดกี่โมง',a:'เปิดทำการวันจันทร์–ศุกร์ เวลา 08:00–16:30 น. (แก้ข้อความนี้ได้ในโหมดผู้ดูแล)'},
- {q:'ติดต่อเจ้าหน้าที่',k:'ติดต่อเจ้าหน้าที่,คุยกับเจ้าหน้าที่,แอดมิน,ครู',a:'กดเมนู "คุยกับเจ้าหน้าที่" ด้านบน แล้วยืนยันตัวตนด้วยรหัสนักเรียนเพื่อส่งข้อความถึงเจ้าหน้าที่ได้เลย'}
-];
-let C={...DEF}, FAQ=JSON.parse(JSON.stringify(DEF_FAQ));
 
-/* ============ ตัวช่วย ============ */
-const _mem={};
-const _store=(()=>{try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return localStorage}catch(_){return {getItem:k=>_mem[k]??null,setItem:(k,v)=>{_mem[k]=v},removeItem:k=>{delete _mem[k]}}}})();
-const db=supabase.createClient(SB_URL,SB_KEY,{auth:{storage:_store,detectSessionInUrl:false,lock:async(n,t,fn)=>await fn()}});
-const $=id=>document.getElementById(id);
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-// แสดงวันที่และเวลา เช่น 14 ต.ค. 69 14:11
-const ftime=v=>new Date(v).toLocaleString('th-TH',{day:'numeric',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'});
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-function toast(m,bad){const t=document.createElement('div');t.className='toast'+(bad?' bad':'');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
-const scrollEnd=el=>{el.scrollTop=el.scrollHeight;};
+$("loginForm").onsubmit=async ev=>{
+  ev.preventDefault(); say("กำลังเข้าสู่ระบบ…");
+  const email=syntheticEmail($("loginNumber").value);
+  const {error}=await db.auth.signInWithPassword({email,password:$("loginPassword").value});
+  if(error){say("เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูล");return;}
+  say(""); await startChat();
+};
 
-/* ---------- ฟองข้อความ + ตัวบอกว่ากำลังพิมพ์ ---------- */
-const bubbleHtml=(cls,text,time)=>`<div class="msg ${cls}"><div class="t">${esc(text)}</div><small>${ftime(time)}</small></div>`;
-function dbBubble(m,viewerRole){return bubbleHtml(m.sender_role===viewerRole?'me':'staff',m.message,m.created_at);}
-function showTyping(log,cls='staff'){
-  if(log.querySelector('.typing'))return;
-  const d=document.createElement('div');d.className='msg typing '+cls;d.setAttribute('aria-label','กำลังพิมพ์');d.innerHTML='<i></i><i></i><i></i>';
-  log.appendChild(d);scrollEnd(log);
-}
-const hideTyping=log=>log&&log.querySelectorAll('.typing').forEach(x=>x.remove());
+$("logout").onclick=async()=>{
+  if(channel) await db.removeChannel(channel);
+  channel=null; sessionId=null; studentId=null;
+  await db.auth.signOut(); $("chat").classList.add("hide");$("auth").classList.remove("hide");
+};
 
-/* ============ ใช้ค่าตั้งต้น/สี ============ */
-function applyTheme(){
-  const r=document.documentElement.style,ok=c=>/^#[0-9a-f]{6}$/i.test(c);
-  [['brand','--brand'],['bg','--bg'],['me','--me'],['staff','--staff'],['bot','--bot']].forEach(([k,v])=>{if(ok(C[k]))r.setProperty(v,C[k]);});
-}
-function applyText(){
-  applyTheme();
-  document.title=C.site_name;
-  $('hTitle').textContent=C.site_name;$('hLogo').textContent=C.logo||'🏫';
-  $('tabBot').textContent=C.tab_bot;$('tabPriv').textContent=C.tab_priv;
-  $('wTitle').textContent=C.welcome_title;$('wText').textContent=C.welcome_text;
-  $('faqTitle').textContent=C.faq_title;$('botIn').placeholder=C.bot_placeholder;$('botSend').textContent=C.send_btn;
-  $('lgTitle').textContent=C.login_title;$('lgText').textContent=C.login_text;$('lgCodeL').textContent=C.code_label;$('lgBtn').textContent=C.login_btn;
-  $('privIn').placeholder=C.priv_placeholder;$('privSend').textContent=C.send_btn;$('lgOut').textContent=C.logout_btn;
-  $('closedText').textContent=C.closed_text;$('newChat').textContent=C.new_chat_btn;
-  renderChips();updateStatus();
-}
-async function loadCfg(){
-  try{
-    const r=await db.from(SETTINGS_TABLE).select('*').like('key',KEY_PREFIX.replace('_','\\_')+'%');
-    if(!r.error)(r.data||[]).forEach(x=>{
-      const k=x.key.slice(KEY_PREFIX.length);
-      if(k==='faq'){try{const a=JSON.parse(x.value);if(Array.isArray(a))FAQ=a;}catch(_){}}
-      else if(k in DEF&&x.value!=null&&String(x.value).trim()!=='')C[k]=x.value;
-    });
-  }catch(_){}
-  applyText();
-}
-
-/* ============ บอท (แทนที่ botAnswer ด้วย AI ได้ในอนาคต) ============ */
-// คืนข้อความตอบ หรือ null ถ้าไม่เข้าใจ — เปลี่ยนเป็น fetch ไป Edge Function ที่เรียก AI ได้โดยไม่ต้องแก้ส่วนอื่น
-async function botAnswer(text){
-  const t=text.trim().toLowerCase();
-  for(const f of FAQ){
-    const keys=(f.k||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-    if(f.q&&t===f.q.trim().toLowerCase())return f.a;
-    if(keys.some(k=>t.includes(k)))return f.a;
+async function startChat(){
+  const {data:{user}}=await db.auth.getUser();
+  if(!user) return;
+  const {data:account,error:aerr}=await db.from("student_accounts").select("student_id").eq("user_id",user.id).single();
+  if(aerr||!account){say("ไม่พบการเชื่อมบัญชีนักเรียน กรุณาติดต่อโรงเรียน");await db.auth.signOut();return;}
+  studentId=account.student_id;
+  // Try latest active session; create one only if none exists.
+  let {data:sessions,error}=await db.from("chat_sessions").select("id,status").eq("student_id",studentId).neq("status","closed").order("created_at",{ascending:false}).limit(1);
+  if(error){say("โหลดห้องแชทไม่สำเร็จ");return;}
+  if(!sessions?.length){
+    const created=await db.from("chat_sessions").insert({student_id:studentId,status:"bot"}).select("id,status").single();
+    if(created.error){say("สร้างห้องแชทไม่สำเร็จ");return;}
+    sessions=[created.data];
   }
-  return null;
-}
-function renderChips(){
-  $('chips').innerHTML=FAQ.filter(f=>f.q).map((f,i)=>`<button class="chip" type="button" data-i="${i}">${esc(f.q)}</button>`).join('');
-  $('faqTitle').classList.toggle('hide',!FAQ.some(f=>f.q));
-  $('chips').querySelectorAll('.chip').forEach(b=>b.onclick=()=>askBot(FAQ[b.dataset.i].q));
-}
-function addBotMsg(cls,text){
-  const log=$('botLog');log.insertAdjacentHTML('beforeend',bubbleHtml(cls+' in',text,new Date()));scrollEnd(log);
-}
-let botBusy=false;
-async function askBot(text){
-  text=text.trim();if(!text||botBusy)return;
-  botBusy=true;
-  addBotMsg('me',text);
-  const log=$('botLog');
-  showTyping(log,'bot');                       // อนิเมชันรอข้อความ
-  const [a]=await Promise.all([botAnswer(text),sleep(700+Math.random()*500)]);
-  hideTyping(log);
-  addBotMsg('bot',a||C.fallback);
-  botBusy=false;
-}
-$('botForm').onsubmit=ev=>{ev.preventDefault();const v=$('botIn').value;$('botIn').value='';askBot(v);};
-
-/* ============ เมนูผู้ใช้ ============ */
-function userTab(t){
-  $('tabBot').classList.toggle('on',t==='bot');$('tabPriv').classList.toggle('on',t==='priv');
-  $('botPane').classList.toggle('hide',t!=='bot');$('privPane').classList.toggle('hide',t!=='priv');
-  if(t==='priv')initPrivate();
-}
-$('tabBot').onclick=()=>userTab('bot');
-$('tabPriv').onclick=()=>userTab('priv');
-
-/* ============ ตัวบอกว่า "กำลังพิมพ์" ระหว่างนักเรียนกับแอดมิน (Realtime broadcast ไม่มีเนื้อหาข้อความ) ============ */
-let TY=null;
-function openTyping(sid,role,getLog){
-  closeTyping();
-  const ch=db.channel('typ-'+sid);let timer;
-  ch.on('broadcast',{event:'typing'},({payload})=>{
-    if(!payload||payload.role===role)return;
-    const log=getLog();if(!log)return;
-    showTyping(log);clearTimeout(timer);timer=setTimeout(()=>hideTyping(log),3500);
-  }).subscribe();
-  TY={ch,role,last:0};
-}
-function pingTyping(){
-  if(!TY)return;const n=Date.now();if(n-TY.last<1500)return;TY.last=n;
-  TY.ch.send({type:'broadcast',event:'typing',payload:{role:TY.role}});
-}
-function closeTyping(){if(TY){db.removeChannel(TY.ch);TY=null;}}
-
-/* ============ นักเรียน: ยืนยันตัวตน + แชทส่วนตัว ============ */
-let ST=null,SESSION=null,chStudent=null;
-async function initPrivate(){
-  if(ST)return;
-  const {data}=await db.auth.getSession();
-  if(!data.session)return showLogin();
-  const a=await db.from('student_accounts').select('*').eq('user_id',data.session.user.id).maybeSingle();
-  if(!a.data)return showLogin();
-  enterStudent(a.data);
-}
-function showLogin(){$('loginBox').classList.remove('hide');$('chatBox').classList.add('hide');}
-$('code').oninput=ev=>{ev.target.value=ev.target.value.replace(/\D/g,'').slice(0,5);};
-$('loginForm').onsubmit=async ev=>{
-  ev.preventDefault();$('lgErr').textContent='';
-  const code=$('code').value;
-  if(!/^\d{5}$/.test(code))return $('lgErr').textContent=C.login_err;
-  const b=$('lgBtn');b.disabled=true;b.textContent='กำลังตรวจสอบ...';
-  try{
-    await db.auth.signOut();
-    const r=await db.functions.invoke('student-login',{body:{code}});
-    if(r.error||!r.data?.token_hash){
-      const st=r.error?.context?.status;
-      $('lgErr').textContent=st===429?C.locked_err:C.login_err;return;
-    }
-    const v=await db.auth.verifyOtp({token_hash:r.data.token_hash,type:'magiclink'});
-    if(v.error)throw v.error;
-    $('code').value='';
-    const a=await db.from('student_accounts').select('*').eq('user_id',v.data.user.id).maybeSingle();
-    if(!a.data)throw new Error('no account');
-    enterStudent(a.data);
-  }catch(err){console.error(err);$('lgErr').textContent=C.login_err;}
-  finally{b.disabled=false;b.textContent=C.login_btn;}
-};
-async function enterStudent(acc){
-  ST=acc;
-  $('loginBox').classList.add('hide');$('chatBox').classList.remove('hide');
-  $('stName').textContent=acc.student_name||('รหัส '+acc.student_code);
-  await openSession(false);
-}
-async function openSession(forceNew){
-  const r=await db.rpc('my_chat',{p_new:forceNew});
-  if(r.error){toast('เปิดห้องแชทไม่สำเร็จ',true);return;}
-  SESSION=r.data;
-  await loadPrivMsgs();updateStatus();subscribeStudent();
-  openTyping(SESSION.id,'student',()=>$('privLog'));
-}
-async function loadPrivMsgs(){
-  const r=await db.from('chat_messages').select('*').eq('session_id',SESSION.id).order('created_at');
-  const log=$('privLog');
-  log.innerHTML=bubbleHtml('bot',C.priv_hello,SESSION.created_at)+(r.data||[]).map(m=>dbBubble(m,'student')).join('');
-  scrollEnd(log);
-}
-function updateStatus(){
-  if(!SESSION||!ST)return;
-  const closed=SESSION.status==='closed';
-  $('stStatus').textContent=closed?C.status_closed:C.status_open;
-  $('stStatus').className='pill'+(closed?' c':'');
-  $('privForm').classList.toggle('hide',closed);
-  $('closedBox').classList.toggle('hide',!closed);
-}
-$('privIn').addEventListener('input',pingTyping);
-$('privForm').onsubmit=async ev=>{
-  ev.preventDefault();
-  const text=$('privIn').value.trim();if(!text||!SESSION)return;
-  const {data}=await db.auth.getSession();
-  $('privSend').disabled=true;
-  const r=await db.from('chat_messages').insert({session_id:SESSION.id,sender_id:data.session.user.id,sender_role:'student',message:text});
-  $('privSend').disabled=false;
-  if(r.error)return toast('ส่งไม่สำเร็จ ลองใหม่อีกครั้ง',true);
-  $('privIn').value='';
-  await loadPrivMsgs();
-};
-$('newChat').onclick=()=>openSession(true);
-$('lgOut').onclick=async()=>{
-  await db.auth.signOut();ST=null;SESSION=null;closeTyping();
-  if(chStudent){db.removeChannel(chStudent);chStudent=null;}
-  $('privLog').innerHTML='';showLogin();
-};
-function subscribeStudent(){
-  if(chStudent)db.removeChannel(chStudent);
-  chStudent=db.channel('stu-'+SESSION.id)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'session_id=eq.'+SESSION.id},()=>loadPrivMsgs())
-    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'chat_sessions',filter:'id=eq.'+SESSION.id},p=>{SESSION=p.new;updateStatus();})
-    .subscribe();
-}
-setInterval(()=>{if(SESSION&&ST&&!$('privPane').classList.contains('hide')&&!$('privLog').querySelector('.typing'))loadPrivMsgs();},10000); // สำรองกรณี Realtime หลุด
-
-/* ============ แอดมิน ============ */
-let ADMIN=false,SEL=null,ROOMS=[],chAdmin=null,aTab='chat';
-$('adminBtn').onclick=async()=>{
-  const {data}=await db.auth.getSession();
-  if(data.session){
-    const r=await db.rpc('is_chat_staff');
-    if(r.data===true)return enterAdmin();
-  }
-  $('aErr').textContent='';$('admLogin').classList.remove('hide');$('aem').focus();
-};
-$('aCancel').onclick=()=>$('admLogin').classList.add('hide');
-$('admLogin').onclick=ev=>{if(ev.target===$('admLogin'))$('admLogin').classList.add('hide');};
-$('admForm').onsubmit=async ev=>{
-  ev.preventDefault();$('aErr').textContent='';
-  const b=$('aGo');b.disabled=true;
-  try{
-    if(ST){await db.auth.signOut();ST=null;SESSION=null;closeTyping();}
-    const r=await db.auth.signInWithPassword({email:$('aem').value.trim(),password:$('apw').value});
-    if(r.error){$('aErr').textContent='อีเมลหรือรหัสผ่านไม่ถูกต้อง';return;}
-    const s=await db.rpc('is_chat_staff');
-    if(s.data!==true){await db.auth.signOut();$('aErr').textContent='บัญชีนี้ไม่มีสิทธิ์ผู้ดูแล';return;}
-    $('apw').value='';$('admLogin').classList.add('hide');enterAdmin();
-  }finally{b.disabled=false;}
-};
-function enterAdmin(){
-  ADMIN=true;SEL=null;
-  $('userView').classList.add('hide');$('adminView').classList.remove('hide');$('main').classList.add('wide');
-  $('navUser').classList.add('hide');$('navAdmin').classList.remove('hide');
-  adminTab('chat');loadRooms();subscribeAdmin();
-}
-async function leaveAdmin(out){
-  ADMIN=false;closeTyping();
-  if(chAdmin){db.removeChannel(chAdmin);chAdmin=null;}
-  if(out){await db.auth.signOut();ST=null;SESSION=null;showLogin();}
-  $('adminView').classList.add('hide');$('userView').classList.remove('hide');$('main').classList.remove('wide');
-  $('navAdmin').classList.add('hide');$('navUser').classList.remove('hide');
-}
-$('aBack').onclick=()=>leaveAdmin(false);
-$('aOut').onclick=()=>leaveAdmin(true);
-$('aTabChat').onclick=()=>adminTab('chat');
-$('aTabEdit').onclick=()=>adminTab('edit');
-function adminTab(t){
-  aTab=t;
-  $('aTabChat').classList.toggle('on',t==='chat');$('aTabEdit').classList.toggle('on',t==='edit');
-  $('admGrid').classList.toggle('hide',t!=='chat');$('editPane').classList.toggle('hide',t!=='edit');
-  if(t==='edit')renderEdit();
-}
-async function loadRooms(){
-  const r=await db.from('chat_sessions').select('*').order('last_message_at',{ascending:false});
-  if(r.error)return toast('โหลดห้องแชทไม่สำเร็จ',true);
-  ROOMS=r.data||[];renderRooms();
-  if(SEL){const cur=ROOMS.find(x=>x.id===SEL.id);if(cur){SEL=cur;renderAdminChatHead();}}
-}
-function renderRooms(){
-  $('rooms').innerHTML=ROOMS.map(s=>`<button class="room ${SEL&&SEL.id===s.id?'on':''}" data-id="${esc(s.id)}"><b>${s.admin_unread?'<span class="dot"></span>':''}${esc(s.student_name||'รหัส '+s.student_code)}<span class="pill ${s.status==='closed'?'c':''}" style="margin-left:auto">${esc(s.status==='closed'?C.status_closed:C.status_open)}</span></b><span class="meta">รหัส ${esc(s.student_code)} · ${ftime(s.last_message_at)}</span></button>`).join('')||'<div class="meta" style="padding:20px;text-align:center">ยังไม่มีห้องแชท</div>';
-  $('rooms').querySelectorAll('.room').forEach(b=>b.onclick=()=>selectRoom(b.dataset.id));
-  if(!SEL)$('admChat').innerHTML='<div class="center meta">เลือกห้องแชททางซ้ายเพื่ออ่านและตอบกลับ</div>';
-}
-async function selectRoom(id){
-  SEL=ROOMS.find(x=>x.id===id);if(!SEL)return;
-  $('admGrid').classList.add('chatopen');
-  $('admChat').innerHTML=`<div class="bar2" id="admHead"></div><div class="log" id="admLog"></div><form class="send" id="admSend" autocomplete="off"><input id="admIn" maxlength="1000" placeholder="พิมพ์ข้อความตอบกลับ..." aria-label="ตอบกลับ"><button class="btn">ส่งข้อความ</button></form>`;
-  renderAdminChatHead();
-  $('admSend').onsubmit=sendAdmin;
-  $('admIn').addEventListener('input',pingTyping);
-  openTyping(SEL.id,'admin',()=>$('admLog'));
-  await loadAdminMsgs();
-  if(SEL.admin_unread){await db.from('chat_sessions').update({admin_unread:false}).eq('id',SEL.id);SEL.admin_unread=false;renderRooms();}
-}
-function renderAdminChatHead(){
-  const h=$('admHead');if(!h||!SEL)return;
-  const closed=SEL.status==='closed';
-  h.innerHTML=`<div><button class="btn o s" id="admBackBtn" type="button" style="margin-right:6px">←</button><b>${esc(SEL.student_name||'รหัส '+SEL.student_code)}</b> <span class="pill ${closed?'c':''}">${esc(closed?C.status_closed:C.status_open)}</span></div><button class="btn ${closed?'':'r'} s" id="admToggle" type="button">${closed?'เปิดห้องอีกครั้ง':'ปิดห้องแชท'}</button>`;
-  $('admBackBtn').onclick=()=>{SEL=null;closeTyping();$('admGrid').classList.remove('chatopen');renderRooms();};
-  $('admToggle').onclick=async()=>{
-    const r=await db.from('chat_sessions').update({status:closed?'open':'closed'}).eq('id',SEL.id).select();
-    if(r.error||!r.data?.length)return toast('เปลี่ยนสถานะไม่สำเร็จ',true);
-    loadRooms();
-  };
-}
-async function loadAdminMsgs(){
-  if(!SEL||!$('admLog'))return;
-  const r=await db.from('chat_messages').select('*').eq('session_id',SEL.id).order('created_at');
-  $('admLog').innerHTML=(r.data||[]).map(m=>dbBubble(m,'admin')).join('')||'<div class="meta" style="text-align:center">ยังไม่มีข้อความ</div>';
-  scrollEnd($('admLog'));
-}
-async function sendAdmin(ev){
-  ev.preventDefault();
-  const text=$('admIn').value.trim();if(!text||!SEL)return;
-  const {data}=await db.auth.getSession();
-  const r=await db.from('chat_messages').insert({session_id:SEL.id,sender_id:data.session.user.id,sender_role:'admin',message:text});
-  if(r.error)return toast('ส่งไม่สำเร็จ',true);
-  $('admIn').value='';loadAdminMsgs();loadRooms();
-}
-function subscribeAdmin(){
-  if(chAdmin)db.removeChannel(chAdmin);
-  chAdmin=db.channel('adm')
-    .on('postgres_changes',{event:'*',schema:'public',table:'chat_sessions'},()=>{if(ADMIN)loadRooms();})
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},p=>{
-      if(!ADMIN)return;
-      if(SEL&&p.new.session_id===SEL.id){loadAdminMsgs();if(p.new.sender_role==='student')db.from('chat_sessions').update({admin_unread:false}).eq('id',SEL.id).then(()=>{});}
+  sessionId=sessions[0].id;
+  $("auth").classList.add("hide");$("chat").classList.remove("hide");
+  $("status").textContent="สถานะ: "+sessions[0].status;
+  await loadMessages();
+  if(channel) await db.removeChannel(channel);
+  channel=db.channel("chat-"+sessionId)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"chat_messages",filter:"session_id=eq."+sessionId},payload=>{
+      addMessage(payload.new);
+    })
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"chat_sessions",filter:"id=eq."+sessionId},payload=>{
+      $("status").textContent="สถานะ: "+payload.new.status;
     }).subscribe();
 }
-setInterval(()=>{if(ADMIN&&aTab==='chat'){loadRooms();if($('admLog')&&!$('admLog').querySelector('.typing'))loadAdminMsgs();}},15000);
-
-/* ============ แอดมิน: แก้ไขข้อความ/สี/คำถามบอท ============ */
-function renderEdit(){
-  const inp=([k,l])=>`<div><label class="lbl" for="t_${k}" style="margin-top:0">${esc(l)}</label><input id="t_${k}" value="${esc(C[k])}"></div>`;
-  $('editPane').innerHTML=`
-  <div class="card panel"><h2>สีของเว็บไซต์</h2><p class="meta" style="margin:0">เปลี่ยนแล้วเห็นผลทันที กด "บันทึกทั้งหมด" เพื่อใช้กับทุกคน</p>
-    <div class="swatches">${COLOR_FIELDS.map(([k,l])=>`<label><input type="color" id="c_${k}" value="${esc(C[k])}">${esc(l)}</label>`).join('')}</div></div>
-  <div class="card panel"><h2>ข้อความทุกส่วน</h2><p class="meta" style="margin:0 0 14px">เว้นว่างไว้เพื่อใช้ข้อความเริ่มต้น</p><div class="grid2">${TEXT_FIELDS.map(inp).join('')}</div></div>
-  <div class="card panel"><h2>คำถามด่วนและคำตอบบอท</h2><p class="meta" style="margin:0 0 14px">คำสำคัญคั่นด้วยเครื่องหมายจุลภาค (,) ถ้าข้อความของนักเรียนมีคำเหล่านี้ บอทจะตอบคำตอบนี้</p>
-    <div id="faqList"></div><button class="btn o s" id="faqAdd" type="button">+ เพิ่มคำถาม</button></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="saveAll" type="button">บันทึกทั้งหมด</button><button class="btn o" id="resetAll" type="button">คืนค่าเริ่มต้น</button></div>`;
-  COLOR_FIELDS.forEach(([k])=>$('c_'+k).oninput=ev=>{C[k]=ev.target.value;applyTheme();});
-  drawFaq();
-  $('faqAdd').onclick=()=>{readFaq();FAQ.push({q:'',k:'',a:''});drawFaq();};
-  $('saveAll').onclick=saveAll;
-  $('resetAll').onclick=()=>{if(!confirm('คืนข้อความ สี และคำถามทั้งหมดเป็นค่าเริ่มต้น (ยังไม่บันทึกจนกว่าจะกดบันทึก)?'))return;C={...DEF};FAQ=JSON.parse(JSON.stringify(DEF_FAQ));applyText();renderEdit();};
+function addMessage(m){
+  if(document.querySelector(`[data-msg="${m.id}"]`)) return;
+  const div=document.createElement("div");div.className="msg"+(m.sender_type==="student"?" mine":"");div.dataset.msg=m.id;
+  const title=document.createElement("b");title.textContent=m.sender_type==="staff"?"เจ้าหน้าที่":m.sender_type==="bot"?"บอท":m.sender_type==="system"?"ระบบ":"คุณ";
+  const body=document.createElement("div");body.textContent=m.message;div.append(title,body);$("messages").append(div);$("messages").scrollTop=$("messages").scrollHeight;
 }
-function drawFaq(){
-  $('faqList').innerHTML=FAQ.map((f,i)=>`<div class="faqrow"><input data-f="q" data-i="${i}" placeholder="ข้อความบนปุ่มคำถาม" value="${esc(f.q)}"><input data-f="k" data-i="${i}" placeholder="คำสำคัญ คั่นด้วย ," value="${esc(f.k)}"><textarea data-f="a" data-i="${i}" placeholder="คำตอบของบอท">${esc(f.a)}</textarea><button class="btn o s" type="button" data-rm="${i}" style="justify-self:start">ลบคำถามนี้</button></div>`).join('');
-  $('faqList').querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{readFaq();FAQ.splice(+b.dataset.rm,1);drawFaq();});
+async function loadMessages(){
+  $("messages").replaceChildren();
+  const {data,error}=await db.from("chat_messages").select("*").eq("session_id",sessionId).order("created_at");
+  if(error){$("status").textContent="โหลดข้อความไม่สำเร็จ";return;}
+  (data||[]).forEach(addMessage);
 }
-function readFaq(){document.querySelectorAll('#faqList [data-f]').forEach(el=>{FAQ[+el.dataset.i][el.dataset.f]=el.value;});}
-async function saveAll(){
-  readFaq();
-  const vals={};
-  TEXT_FIELDS.forEach(([k])=>vals[k]=$('t_'+k).value.trim());
-  COLOR_FIELDS.forEach(([k])=>vals[k]=$('c_'+k).value);
-  const faq=FAQ.filter(f=>f.q.trim()||f.a.trim()).map(f=>({q:f.q.trim(),k:f.k.trim(),a:f.a.trim()}));
-  const now=new Date().toISOString();
-  const rows=Object.entries(vals).map(([k,value])=>({key:KEY_PREFIX+k,value,updated_at:now}));
-  rows.push({key:KEY_PREFIX+'faq',value:JSON.stringify(faq),updated_at:now});
-  const r=await db.from(SETTINGS_TABLE).upsert(rows).select();
-  if(r.error||!r.data?.length)return toast('บันทึกไม่สำเร็จ: '+(r.error?.message||'ไม่มีสิทธิ์'),true);
-  C={...DEF};FAQ=JSON.parse(JSON.stringify(DEF_FAQ));await loadCfg();renderEdit();
-  toast('บันทึกเรียบร้อยแล้ว');
+async function sendToDb(text,senderType="student"){
+  const {data:{user}}=await db.auth.getUser();
+  const {error}=await db.from("chat_messages").insert({session_id:sessionId,sender_id:user.id,sender_type:senderType,message:text});
+  if(error) throw error;
 }
-
-/* ============ เริ่มต้น ============ */
-applyText();loadCfg();
-</script>
-</body>
-</html>
+async function botReply(text){
+  const q=text.toLowerCase();
+  let answer="ขออภัย บอทยังตอบคำถามนี้ไม่ได้ กด “คุยกับเจ้าหน้าที่” เพื่อส่งคำขอได้ครับ";
+  if(/ติดต่อเจ้าหน้าที่|คุยกับคน|แอดมิน|เจ้าหน้าที่/.test(q)){
+    const {error}=await db.from("chat_sessions").update({status:"waiting",updated_at:new Date().toISOString()}).eq("id",sessionId);
+    if(error) throw error;
+    answer="รับเรื่องแล้วครับ ส่งคำขอไปยังคิวเจ้าหน้าที่แล้ว กรุณารอสักครู่";
+  }else if(/ค่ากีฬาสี|ราคา|เท่าไร|ยอดเงิน/.test(q)){
+    const {data,error}=await db.from("sp_items").select("name,price").order("sort");
+    if(error) throw error;
+    answer=(data||[]).map(x=>`${x.name}: ${Number(x.price||0).toLocaleString("th-TH")} บาท`).join("\n")||"ยังไม่มีรายการค่ากีฬาสีในระบบ";
+  }else if(/วันปิด|กำหนดชำระ|วันไหน/.test(q)){
+    const {data,error}=await db.from("sp_settings").select("value").eq("key","deadline").maybeSingle();
+    if(error) throw error;
+    answer=data?.value ? "กำหนดปิดรับชำระ: "+new Date(data.value).toLocaleString("th-TH") : "ยังไม่ได้กำหนดวันปิดรับชำระ กรุณาติดต่อเจ้าหน้าที่";
+  }else if(/สถานะ|จ่ายเงิน|ชำระ|สลิป/.test(q)){
+    const {data:items,error}=await db.from("sp_items").select("id,name");
+    if(error) throw error;
+    const {data:status,error:serr}=await db.from("sp_status").select("item_id,status").eq("student_id",studentId);
+    if(serr) throw serr;
+    answer=(items||[]).map(i=>`${i.name}: ${{approved:"ชำระแล้ว",pending:"รอตรวจสอบ"}[(status||[]).find(x=>x.item_id===i.id)?.status]||"ยังไม่มีสถานะยืนยัน"}`).join("\n")||"ยังไม่มีรายการให้ตรวจสอบ";
+  }else if(/สวัสดี|หวัดดี|hello/.test(q)) answer="สวัสดีครับ 😊 เลือกคำถามด่วนด้านบนได้เลย";
+  await sendToDb(answer,"bot");
+}
+async function submitMessage(text){
+  if(!sessionId||!text.trim()) return;
+  const value=text.trim();
+  try{
+    await sendToDb(value,"student");
+    const {data:sess,error}=await db.from("chat_sessions").select("status").eq("id",sessionId).single();
+    if(error) throw error;
+    if(sess.status==="bot") await botReply(value);
+    else if(sess.status==="waiting") {/* human queue; staff will answer */}
+    else if(sess.status==="human") {/* staff-only responses */}
+  }catch(err){$("status").textContent="ส่งข้อความไม่สำเร็จ: "+(err.message||"ลองอีกครั้ง");}
+}
+$("sendForm").onsubmit=ev=>{ev.preventDefault();const input=$("message");const text=input.value;input.value="";submitMessage(text);};
+$("menu").onclick=ev=>{const b=ev.target.closest("button[data-q]");if(b)submitMessage(b.dataset.q);};
+(async()=>{const {data:{session}}=await db.auth.getSession();if(session)await startChat();})();
+</script></body></html>
