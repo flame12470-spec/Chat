@@ -358,7 +358,8 @@ $('loginForm').onsubmit=async ev=>{
     const r=await db.functions.invoke('student-login',{body:{code}});
     if(r.error||!r.data?.token_hash){
       const st=r.error?.context?.status;
-      $('lgErr').textContent=st===429?C.locked_err:C.login_err;return;
+      console.error('student-login',st,r.error);
+      $('lgErr').textContent=st===429?C.locked_err:st===401?C.login_err:`ระบบยืนยันตัวตนขัดข้อง (${st||'เชื่อมต่อไม่ได้'}) กรุณาแจ้งผู้ดูแล`;return;
     }
     const v=await db.auth.verifyOtp({token_hash:r.data.token_hash,type:'magiclink'});
     if(v.error)throw v.error;
@@ -366,7 +367,7 @@ $('loginForm').onsubmit=async ev=>{
     const a=await db.from('student_accounts').select('*').eq('user_id',v.data.user.id).maybeSingle();
     if(!a.data)throw new Error('no account');
     enterStudent(a.data);
-  }catch(err){console.error(err);$('lgErr').textContent=C.login_err;}
+  }catch(err){console.error(err);$('lgErr').textContent='ระบบยืนยันตัวตนขัดข้อง (เข้าสู่ระบบไม่สำเร็จ) กรุณาแจ้งผู้ดูแล';}
   finally{b.disabled=false;b.textContent=C.login_btn;}
 };
 async function enterStudent(acc){
